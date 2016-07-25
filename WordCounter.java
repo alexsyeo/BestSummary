@@ -6,15 +6,12 @@ public class WordCounter {
         article = a;
     }
     public String countWords() {
-    //Removing Punctuation:    
+    //Removing Punctuation:
         String cleanArticle = article;
         String OK = "abcdefghijklmnopqrstuvwxyz ";
         for (int i = 0; i < cleanArticle.length(); i++) {
-            boolean isOK = false;
             for (int j = 0; j < OK.length(); j++) {
                 if (cleanArticle.charAt(i) == OK.charAt(j))
-                    isOK = true;
-                if (isOK)
                     break;
             }
         }
