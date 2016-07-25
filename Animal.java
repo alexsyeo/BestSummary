@@ -19,6 +19,7 @@ public class Animal {
 	
 	public static void main(String[] args) {
 		Dog dog1 = new Dog();
+		error
 		dog1.setName("Baxter");
 		System.out.println(dog1.checkForOwner());
 	}
