@@ -1,5 +1,10 @@
 import java.util.*;
 
+<<<<<<< HEAD
+=======
+
+//testing this out
+>>>>>>> ac81e4bcc961ef521f148322e23b61afdbef9979
 public class Animal {
 	private int numLegs;
 	private int weight;
