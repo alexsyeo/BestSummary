@@ -8,6 +8,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -50,7 +51,7 @@ public class ArticleReceiver {
             e.printStackTrace();
         }
     }
-    public void gatherText(){
+    public void gatherText() throws IOException{
             //gather articles
             for (String newsLink : newsLinks) {
             	Document doc = Jsoup.connect(newsLink).get();
