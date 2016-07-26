@@ -1,23 +1,39 @@
 public class Word {
-    String partOfSpeech;
-    String word;
-    int instances;
+    private String partOfSpeech;
+    private String word;
+    private int instances;
     
     public Word() {}
     public Word(String w, int i) {
-        word = w;
-        instances = i;
-        partOfSpeech = "?";
+        this.word = w;
+        this.instances = i;
+        this.partOfSpeech = "?";
     }
+    
+    
     public String getPartOfSpeech() {
         return partOfSpeech;
     }
+    public void setPartOfSpeech(String i) {
+        this.partOfSpeech = i;
+    }
+    
+    
     public String getWord() {
         return word;
     }
+    public void setWord(String i) {
+        this.word = i;
+    }
+    
+    
     public int getInstances() {
         return instances;
     }
+    public void setInstances(int i) {
+        this.instances = i;
+    }
+    
     public String toString() {
         return word;
     }
