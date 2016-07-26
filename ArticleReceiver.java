@@ -14,8 +14,8 @@ import org.jsoup.select.Elements;
 
 public class ArticleReceiver {
 
-    private static ArrayList<String> newsArticles = new ArrayList<>();
-    private static ArrayList<String> newsLinks = new ArrayList<>();
+    private static List<Article> newsArticles = new ArrayList<>();
+    private static List<String> newsLinks = new ArrayList<>();
 
     public ArticleReceiver(int numArticles, String link){
     	receiveNewsArticles(numArticles, link);
@@ -44,7 +44,12 @@ public class ArticleReceiver {
             
             //remove unnecessary link
             newsLinks.remove(0);
-
+        
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void gatherText(){
             //gather articles
             for (String newsLink : newsLinks) {
             	Document doc = Jsoup.connect(newsLink).get();
@@ -52,19 +57,15 @@ public class ArticleReceiver {
             	
             	String article = element.text();
             	
-            	newsArticles.add(article);
+            	newsArticles.add(new Article(article));
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public ArrayList<String> getArticles(){
+    public List<Article> getArticles(){
         return newsArticles;
     }
 
-    public String getArticle(int i){
+    public Article getArticle(int i){
         if(newsArticles.size() <= i){
             return "Null pointer exception";
         }else{
