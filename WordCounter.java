@@ -5,7 +5,7 @@ public class WordCounter {
     public WordCounter(String a) {
         article = a;
     }
-    public String countWords() {
+    public Word[] countWords() {
     //Removing Punctuation:
         String cleanArticle = article;
         String OK = "abcdefghijklmnopqrstuvwxyz ";
@@ -55,9 +55,9 @@ public class WordCounter {
             }
         }
     //Return:
-        String ret = "";
+        Word[] ret = new Word[commonWords.length];
         for (int i = 0; i < commonWords.length; i++) {
-            ret += wordCount[i] + "\t" + commonWords[i] + "\n";
+            ret[i] = new Word(commonWords[i], wordCount[i]);
         }
         return ret;
     }
