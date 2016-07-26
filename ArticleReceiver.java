@@ -44,7 +44,6 @@ public class ArticleReceiver {
             
             //remove unnecessary link
             newsLinks.remove(0);
-            System.out.println(newsLinks);
 
             //gather articles
             for (String newsLink : newsLinks) {
