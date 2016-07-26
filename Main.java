@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Main {
 	
-	private static ArrayList<String> articles = new ArrayList<>();
+	private static List<Article> articles = new ArrayList<>();
 
 	public static void main(String[] args){
 		//Get 5 articles from CNN News
