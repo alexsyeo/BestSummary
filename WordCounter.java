@@ -1,28 +1,27 @@
 import java.util.ArrayList;
 //HI!
+
 public class WordCounter {
+
+    //list of unimportant words
+    //includes the 70 most common one-word prepositions and the FANBOYS
+    String[] unimportant = new String["aboard", "about", "above", "across", "after", "against", "along", "amid", "among", "and", "anti", "around", "as", "at", "before", "behind", "below", "beneath", "beside", "besides", "between", "beyond", "but", "by", "concerning", "considering", "despite", "down", "during", "except", "excepting", "excluding", "following", "for", "from", "in", "inside", "into", "like", "minus", "near", "nor", "of", "off", "on", "onto", "opposite", "or", "outside", "over", "past", "per", "plus", "regarding", "round", "save", "since", "than", "through", "to", "toward", "towards", "under", "underneath", "unlike", "until", "up", "upon", "versus", "via", "with", "within", "without", "yet"];
+
     String article;
     public WordCounter(String a) {
         article = a;
     }
     public String countWords() {
-    //Removing Punctuation:    
+    //Removing Punctuation:
         String cleanArticle = article;
         String OK = "abcdefghijklmnopqrstuvwxyz ";
         for (int i = 0; i < cleanArticle.length(); i++) {
-            boolean isOK = false;
             for (int j = 0; j < OK.length(); j++) {
-                if (Character.toLowerCase(cleanArticle.charAt(i)) == OK.charAt(j))
-                    isOK = true;
-                if (isOK)
+                if (cleanArticle.charAt(i) == OK.charAt(j))
                     break;
             }
-            if (!isOK) {
-                cleanArticle = cleanArticle.substring(0,i) + cleanArticle.substring(i+1);
-                i--;
-            }
         }
-    /*Creating String array where wach word appears once
+    /*Creating String array where each word appears once
     Creating a corresponding Integer array that counts how many times each word appears*/
         String[] words  = cleanArticle.split(" ");
         ArrayList<String> wordList = new ArrayList<String>();
