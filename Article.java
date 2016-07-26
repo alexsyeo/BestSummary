@@ -4,6 +4,7 @@ public class Article{
     private String text;
     
     public Article(String s){
+        this.text = s;
         sentences = new ArrayList<String>();
         //Splits the large string into sentences by punctuation (|\\ is an "or" operator)
         String[] temp = s.split(".|\\!|\\?")
