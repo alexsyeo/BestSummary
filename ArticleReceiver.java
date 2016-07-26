@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -67,7 +68,7 @@ public class ArticleReceiver {
 
     public Article getArticle(int i){
         if(newsArticles.size() <= i){
-            return "Null pointer exception";
+            return new Article("");
         }else{
             return newsArticles.get(i);
         }
