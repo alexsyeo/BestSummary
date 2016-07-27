@@ -1,18 +1,19 @@
-package bestsummarydevelopment;
-
 import java.util.ArrayList;
-import java.util.List;
-
 
 public class Article{
 
     private Sentence[] sentences;
     private String text;
+    private ArrayList<Sentence> bestSentences = new ArrayList<>();
     
     public Article(String s){
     	WordCounter counter = new WordCounter(s);
         sentences = counter.makeSentences();
         this.text = s;
+        
+        for(Sentence se:sentences){
+        	se.scoreSentence();
+        }
 
         //Splits the large string into sentences by punctuation (|\\ is an "or" operator)
         
@@ -21,6 +22,11 @@ public class Article{
         //NOT EVERY PERIOD WILL SIGNIFY THE END OF A SENTENCE. WE NEED IF STATEMENTS (if it's not Mr., Dr., Mrs., etc.)
         
     
+    }
+    
+    private void findBestSentences(){
+    	
+    	
     }
     
     public Sentence getSentence(int i){
