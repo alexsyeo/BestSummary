@@ -5,34 +5,31 @@ public class WordCounter {
     public WordCounter(String a) {
         article = a;
     }
-    public String removePunctuation(String str) {
-        String OK = "abcdefghijklmnopqrstuvwxyz' ";
-        for (int i = 0; i < str.length(); i++) {
+    public Word[] countWords() {
+    //Removing Punctuation:
+        String cleanArticle = article;
+        String OK = "abcdefghijklmnopqrstuvwxyz ";
+        for (int i = 0; i < cleanArticle.length(); i++) {
             boolean isOK = false;
             for (int j = 0; j < OK.length(); j++) {
-                if (Character.toLowerCase(str.charAt(i)) == OK.charAt(j)) {
+                if (Character.toLowerCase(cleanArticle.charAt(i)) == OK.charAt(j))
                     isOK = true;
+                if (isOK)
                     break;
-                }
             }
             if (!isOK) {
-                str = str.substring(0,i) + str.substring(i+1);
+                cleanArticle = cleanArticle.substring(0,i) + cleanArticle.substring(i+1);
                 i--;
             }
         }
-        return str;
-    }
-    public Word[] countWords() {
-    String cleanArticle = removePunctuation(article);
-    /*Creating String array where each word appears once
+    /*Creating String array where wach word appears once
     Creating a corresponding Integer array that counts how many times each word appears*/
-        String[] words = cleanArticle.split(" ");
+        String[] words  = cleanArticle.split(" ");
         ArrayList<String> wordList = new ArrayList<String>();
         for (int i = 0; i < words.length; i++) {
-            if (!words[i].equals(""))
+            if (!word[i].equals(""))
                 wordList.add(words[i]);
         }
-        
         ArrayList<String> oneWordList = new ArrayList<String>();
         ArrayList<Integer> wordCountList = new ArrayList<Integer>();
         for (int i = 0; i < wordList.size(); i++) {
