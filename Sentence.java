@@ -1,3 +1,5 @@
+package bestsummarydevelopment;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +13,7 @@ public class Sentence {
 
   private int points;
   private int numWords;
-  private boolean anaphor;
-  private boolean transition;
-  private boolean properNoun;
+  private boolean badWord;
   private List<Word> words;
 
 
@@ -29,46 +29,44 @@ public class Sentence {
     }
     this.numWords = temp.length;
   }
-  
+
   //sets up the part of speech tagger
   public POSTaggerME setupPOSTagger(){
-	InputStream modelIn = null;
-	POSModel model = null;
-	try {
-	  modelIn = new FileInputStream("/Users/williamadriance/eclipse/workspace/Testing/src/com/company/en-pos-maxent.bin");
-	  model = new POSModel(modelIn);
-	}
-	catch (IOException e) {
-	  // Model loading failed, handle the error
-	  e.printStackTrace();
-	}
-	finally {
-	  if (modelIn != null) {
-	    try {
-	      modelIn.close();
-	    }
-	    catch (IOException e) {
-	    }
-	  }
-	}
-	
-	POSTaggerME tagger = new POSTaggerME(model);
-	
-	return tagger;
+  	InputStream modelIn = null;
+  	POSModel model = null;
+  	try {
+  	  modelIn = new FileInputStream("/Users/williamadriance/eclipse/workspace/Testing/src/com/company/en-pos-maxent.bin");
+  	  model = new POSModel(modelIn);
+  	}
+  	catch (IOException e) {
+  	  // Model loading failed, handle the error
+  	  e.printStackTrace();
+  	}
+  	finally {
+  	  if (modelIn != null) {
+  	    try {
+  	      modelIn.close();
+  	    }
+  	    catch (IOException e) {
+  	    }
+  	  }
+  	}
+
+  	POSTaggerME tagger = new POSTaggerME(model);
+
+  	return tagger;
   }
-  
+
+
+  //getters and setters for number of words in the sentence
   public int getNumWords(){
 	  return this.numWords;
   }
+  public void setNumWords(int i) {
+    this.numWords = i;
+  }
 
-  //getters and setters for points
-  public int getPoints() {
-    return this.points;
-  }
-  public void setPoints(int i) {
-    this.points = i;
-  }
-  
+
   //getters and setters for specific Words
   public Word getWord(int index){
 	  return words.get(index);
@@ -79,29 +77,59 @@ public class Sentence {
   }
 
 
-  //getters and setters for anaphors
-  public boolean getAnaphor() {
-    return this.anaphor;
+  //getters and setter for badWord
+  public boolean getBadWord() {
+    return this.badWord;
   }
-  public void setAnaphor(boolean i) {
-    this.anaphor = i;
+  public void setBadWord(boolean i) {
+    this.badWord = i;
   }
 
-  //getters and setters for transitions
-  public boolean getTransition() {
-    return this.transition;
+  //checks to see if there is a "bad" word in the sentence
+  public void checkBadWord() {
+    boolean k = false;
+    for (int i = 0; i < words.size(); i++) {
+      if (words.getWord(i).getPartOfSpeech().substring(0,2).equals("WP") || (words.getWord(i).getPartOfSpeech().length() > 2 && words.getWord(i).getPartOfSpeech().substring(0,3).equals("PRP")))
+        k = true;
+    }
+    if (k)
+      this.badWord = true;
+    else
+      this.badWord = false;
   }
-  public void setTransition(boolean i) {
-    this.transition = i;
+
+
+
+
+  //getters and setters for points
+  public int getPoints() {
+    return this.points;
   }
-  
-  //getters and setters for properNoun
-  public boolean getProperNoun() {
-    return this.properNoun;
+  public void setPoints(int i) {
+    this.points = i;
   }
-  public void setProperNoun(boolean i) {
-    this.properNoun = i;
+
+
+  //sets the score of the sentence
+  public boolean scoreSentence() {
+    int count = 0;
+    this.checkBadWord();
+    for(int i = 0;i < words.size();i++){
+      if (words.get(i).getPartOfSpeech().substring(0,3).equals("NNP"))
+        count += (words.get(i).getInstances() * 2);
+      else if (words.get(i).getPartOfSpeech().substring(0,2).equals("CC") || words.get(i).getPartOfSpeech().substring(0,2).equals("IN"))
+        count += 0;
+      else
+        count += words.get(i).getInstances();
+    }
+
+    int ratio = count / words.size();
+    if (this.getBadWord())
+      ratio = ratio / 2;
+    this.points = ratio;
+    return true;
   }
+
 
   //to-string method
   public String toString() {
