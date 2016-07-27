@@ -1,4 +1,4 @@
-package bestsummarydevelopment;
+//package bestsummarydevelopment;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,7 @@ public class WordCounter {
     }
     public Sentence[] makeSentences() {
     	int mark = 0;
+    	//Divides article into sentence length Strings and then feeds those strings into the Sentence constructor.
     	ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
     	for (int i = 0; i < article.length(); i++) {
 			if (article.charAt(i) == '.' || article.charAt(i) == '!' || article.charAt(i) == '?') {
@@ -29,18 +30,22 @@ public class WordCounter {
     }
     
     public void setWordNumbers() {
+    	//Runs through all of the sentences
     	for (int i = 0; i < sentences.length; i++) {
-    		//Make sure we make the getNumWords() method for Sentence!
+    		//Runs through all of the words in the current sentence
     		for (int j = 0; j < sentences[i].getNumWords(); j++) {
+    			//Sets a variable to count the instances of the current word
     			int count = 0;
+    			//Runs through all of the sentences
     			for (int k = 0; k < sentences.length; k++) {
+    	    		//Runs through all of the words in the current sentence
     				for (int l = 0; l < sentences[k].getNumWords(); l++) {
-    					//Make sure we make the getWord(int i) method for Sentence!
-    					//Make sure we make the equals(Word) method for Word!
-    					if (sentences[i].getWord(j).equals(sentences[k].getWord(l)))
-    						count++;
+    					//Tests if the first word is equal to the second word
+    					if (sentences[i].getWord(j).isEqualTo(sentences[k].getWord(l)))
+    						count++; //If the words are equal, increase the count variable
     				}
     			}
+    			//Set the instance variable for the word equal to the count variable
     			sentences[i].getWord(j).setInstances(count);
     		}
     	}
