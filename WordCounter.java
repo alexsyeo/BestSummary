@@ -27,7 +27,7 @@ public class WordCounter {
         String[] words  = cleanArticle.split(" ");
         ArrayList<String> wordList = new ArrayList<String>();
         for (int i = 0; i < words.length; i++) {
-            if (!word[i].equals(""))
+            if (!words[i].equals(""))
                 wordList.add(words[i]);
         }
         ArrayList<String> oneWordList = new ArrayList<String>();
