@@ -1,77 +1,122 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.List;
-
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class ArticleReceiver {
 
-    private static List<Article> newsArticles = new ArrayList<>();
-    private static List<String> newsLinks = new ArrayList<>();
+	private ArrayList<String> newsArticles = new ArrayList<>();
+	private ArrayList<String> newsLinks = new ArrayList<>();
 
-    public ArticleReceiver(int numArticles, String link){
-    	receiveNewsArticles(numArticles, link);
-    }
-    
-    private static void receiveNewsArticles(int numArticles, String urlAddress){
-        URL rssUrl = null;
-        try {
-            //gather links
-            rssUrl = new URL(urlAddress);
-            BufferedReader in = new BufferedReader(new InputStreamReader(rssUrl.openStream()));
-            String line;
-            while((line = in.readLine()) != null && newsLinks.size() <= numArticles){
-                if(line.contains("<link>")){
-                    int firstPos = line.indexOf("<link>");
-                    String temp = line.substring(firstPos);
-                    temp = temp.replace("<link>", "");
-                    int lastPos = temp.indexOf("</link>");
-                    temp = temp.substring(0, lastPos);
-                    
-                    newsLinks.add(temp);
-                }
-            }
+	public ArticleReceiver(int numArticles, String link) {
+		if (numArticles != 0) {
+			receiveNewsArticles(numArticles, link);
+		}else{
+			System.out.println("ERROR: numArticles request for " + link + " cannot equal 0.");
+		}
+	}
 
-            in.close();
-            
-            //remove unnecessary link
-            newsLinks.remove(0);
-        
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public void gatherText() throws IOException{
-            //gather articles
-            for (String newsLink : newsLinks) {
-            	Document doc = Jsoup.connect(newsLink).get();
-            	Elements element = doc.select("section");
-            	
-            	String article = element.text();
-            	
-            	newsArticles.add(new Article(article));
-            }
-    }
+	private void receiveNewsArticles(int numArticles, String urlAddress) {
+		URL rssUrl = null;
+		// if connected to Internet
+		if (internetIsAvailable()) {
+			try {
+				// gather links
+				rssUrl = new URL(urlAddress);
+				BufferedReader in = new BufferedReader(new InputStreamReader(rssUrl.openStream()));
+				String line;
 
-    public List<Article> getArticles(){
-        return newsArticles;
-    }
+				// fix bbc trash urls
+				if (urlAddress.equals(Main.BBC_URL)) {
+					numArticles++;
+				}
 
-    public Article getArticle(int i){
-        if(newsArticles.size() <= i){
-            return new Article("");
-        }else{
-            return newsArticles.get(i);
-        }
-    }
+				while ((line = in.readLine()) != null && newsLinks.size() <= numArticles) {
+					if (line.contains("<link>")) {
+						// find links through tags
+						int firstPos = line.indexOf("<link>");
+						String temp = line.substring(firstPos);
+						temp = temp.replace("<link>", "");
+						int lastPos = temp.indexOf("</link>");
+						temp = temp.substring(0, lastPos);
+
+						newsLinks.add(temp);
+					}
+				}
+
+				in.close();
+
+				// test if there are links and if there is remove first
+				// unnecessary
+				// link
+				if (!newsLinks.isEmpty()) {
+					if (urlAddress.equals(Main.BBC_URL)) {
+						newsLinks.remove(0);
+					}
+					newsLinks.remove(0);
+				} else {
+					System.out.println("ERROR: No Found Articles. Check If You Have Wifi.");
+				}
+
+				// gather articles from "section" tag of article using Jsoup
+				for (String newsLink : newsLinks) {
+					// get webpage
+					Document doc = Jsoup.connect(newsLink).get();
+
+					// get article from different websites
+					if (urlAddress.equals(Main.FOX_URL)) {
+						Elements element = doc.select("p");
+						String article = element.text();
+						newsArticles.add(article);
+					} else if (urlAddress.equals(Main.CNN_URL)) {
+						Elements element = doc.select("section");
+						String article = element.text();
+						newsArticles.add(article);
+					} else if (urlAddress.equals(Main.BBC_URL)) {
+						Elements element = doc.select("p");
+						String article = element.text();
+						newsArticles.add(article);
+					}
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("ERROR: No internet connection established.");
+			return;
+		}
+	}
+
+	public ArrayList<String> getArticles() {
+		return newsArticles;
+	}
+
+	public String getArticle(int i) {
+		if (newsArticles.size() <= i) {
+			return "Null pointer exception";
+		} else {
+			return newsArticles.get(i);
+		}
+	}
+
+	private static boolean internetIsAvailable() {
+		try {
+			final URL url = new URL("http://www.cnn.com");
+			final URLConnection conn = url.openConnection();
+			conn.connect();
+			return true;
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			return false;
+		}
+	}
 }
