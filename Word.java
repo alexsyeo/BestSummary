@@ -14,7 +14,7 @@ public class Word {
     }
     
     public boolean equals(Word other){
-    	return this.word.equals(other.word) && this.partOfSpeech.equals(other.partOfSpeech);
+    	return this.word.equals(other.getWord()) && this.partOfSpeech.equals(other.getPartOfSpeech());
     }
     
     public String getPartOfSpeech() {
