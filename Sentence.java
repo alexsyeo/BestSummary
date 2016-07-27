@@ -8,12 +8,12 @@ public class Sentence {
   private int numWords;
   private boolean anaphor;
   private boolean transition;
-  private List<String> words;
+  private List<Word> words;
 
 
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s) {
-    words = new ArrayList<String>();
+    words = new ArrayList<Word>();
     String[] temp = s.split(" ");
     for (int i = 0; i < temp.length; i++) {
       words.add(temp[i]);
