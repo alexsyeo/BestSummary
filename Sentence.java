@@ -13,6 +13,7 @@ public class Sentence {
   private int numWords;
   private boolean anaphor;
   private boolean transition;
+  private boolean properNoun;
   private List<Word> words;
 
 
@@ -79,7 +80,7 @@ public class Sentence {
 
 
   //getters and setters for anaphors
-  public boolean getAnaphor() {
+  public boolean containsAnaphor() {
     return this.anaphor;
   }
   public void setAnaphor(boolean i) {
@@ -87,11 +88,19 @@ public class Sentence {
   }
 
   //getters and setters for transitions
-  public boolean getTransition() {
+  public boolean containsTransition() {
     return this.transition;
   }
   public void setTransition(boolean i) {
     this.transition = i;
+  }
+  
+  //getters and setters for properNoun
+  public boolean containsProperNoun() {
+    return this.properNoun;
+  }
+  public void setProperNoun(boolean i) {
+    this.properNoun = i;
   }
 
   //to-string method
