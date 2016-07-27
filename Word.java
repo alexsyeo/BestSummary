@@ -1,3 +1,5 @@
+package bestsummarydevelopment;
+
 public class Word {
     private String partOfSpeech;
     private String word;
@@ -11,8 +13,8 @@ public class Word {
         this.partOfSpeech = pos;
     }
     
-    public boolean equals(Word other){
-    	return this.word.equals(other.word) && this.partOfSpeech.equals(other.partOfSpeech);
+    public boolean isEqualTo(Word other){
+    	return this.word.equals(other.getWord()) && this.partOfSpeech.equals(other.getPartOfSpeech());
     }
     
     public String getPartOfSpeech() {
@@ -39,6 +41,6 @@ public class Word {
     }
     
     public String toString() {
-        return word;
+        return word + "POS: " + this.partOfSpeech + "\t";
     }
 }
