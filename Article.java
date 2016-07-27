@@ -18,6 +18,12 @@ public class Article{
 >>>>>>> bc2945c0d621b58b97f8e49783d2f6f3f5962524
         //Splits the large string into sentences by punctuation (|\\ is an "or" operator)
         String[] temp = s.split(".|\\!|\\?");
+        
+        //here, we should take these "sentences" and turn them into Sentences by using the Sentence constructor, feeding in
+        //the Strings. This way, the code below will work.
+        //NOT EVERY PERIOD WILL SIGNIFY THE END OF A SENTENCE. WE NEED IF STATEMENTS (if it's not Mr., Dr., Mrs., etc.)
+        
+        
         for(String r:temp){
             sentences.add(new Sentence(r));
         }
