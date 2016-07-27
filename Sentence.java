@@ -60,25 +60,27 @@ public class Sentence {
   public boolean scoreSentence() {
     int count = 0;
     for(int i = 0;i < words.size();i++){
-    	int temp = words.get(i).getInstances();
+    	int temp = words.get(i).getInstances()*100;
+    	String posTemp = words.get(i).getPartOfSpeech();
     	
-      if (words.get(i).getPartOfSpeech().equals("NNP") || words.get(i).getPartOfSpeech().equals("NNPS"))
+      if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
         temp *= 2;
       //we use substrings for the rest of the if statements to catch multiple similar parts of speech
-      else if (words.get(i).getPartOfSpeech().equals("CC") || words.get(i).getPartOfSpeech().equals("IN"))
+      else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.substring(0,2).equals("RB"))
     	temp = 0;
-      
+    
       count += temp;
     }
-    int ratio = count / words.size();
+    //Can adjust this for longer/shorter sentences
+    int ratio = count;
     //We can tweak this for better results
-    ratio /= checkBadWord() + 1;
-    this.points = ratio;
+    ratio /= checkBadWords() + 1;
+    this.setPoints(ratio);
     return true;
   }
     
   //checks to see if there is a "bad" word in the sentence
-	public int checkBadWord() {
+	public int checkBadWords() {
 	  int badWords = 0;
 	  if (words.size() >= 6) {
 		  for (int i = 0; i < 6; i++) {
@@ -120,11 +122,6 @@ public class Sentence {
   public int getIndexInArticle(){
 	  return this.indexInArticle;
   }
-  
- 
-
-    
-
 
   //to-string method
   public String toString() {
