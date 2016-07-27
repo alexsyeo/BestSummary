@@ -4,12 +4,16 @@ public class Word {
     private int instances;
     
     public Word() {}
-    public Word(String w, int i) {
+    
+    public Word(String w, String pos) {
         this.word = w;
-        this.instances = i;
-        this.partOfSpeech = "?";
+        this.instances = -1;
+        this.partOfSpeech = pos;
     }
     
+    public boolean equals(Word other){
+    	return this.word.equals(other.word) && this.partOfSpeech.equals(other.partOfSpeech);
+    }
     
     public String getPartOfSpeech() {
         return partOfSpeech;
