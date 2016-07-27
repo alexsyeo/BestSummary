@@ -13,7 +13,7 @@ public class Word {
         this.partOfSpeech = pos;
     }
     
-    public boolean equals(Word other){
+    public boolean isEqualTo(Word other){
     	return this.word.equals(other.getWord()) && this.partOfSpeech.equals(other.getPartOfSpeech());
     }
     
@@ -41,6 +41,6 @@ public class Word {
     }
     
     public String toString() {
-        return word + "(" + partOfSpeech + ")[" + instances + "]";
+        return word;
     }
 }
