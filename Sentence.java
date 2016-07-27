@@ -1,3 +1,5 @@
+package bestsummarydevelopment;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +56,13 @@ public class Sentence {
 	POSTaggerME tagger = new POSTaggerME(model);
 	
 	return tagger;
+  }
+  
+  public boolean scoreSentence(){
+	  for(int i=0;i<words.size();i++){
+		  this.points += words.get(i).getInstances();
+	  }
+	  return true;
   }
   
   public int getNumWords(){

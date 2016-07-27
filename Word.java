@@ -1,3 +1,5 @@
+package bestsummarydevelopment;
+
 public class Word {
     private String partOfSpeech;
     private String word;
