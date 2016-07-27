@@ -13,6 +13,7 @@ public class Sentence {
 
   private int points;
   private int numWords;
+  private int indexInArticle;
   private List<Word> words;
 
 
@@ -34,7 +35,7 @@ public class Sentence {
   	InputStream modelIn = null;
   	POSModel model = null;
   	try {
-  	  modelIn = new FileInputStream("/Users/williamadriance/eclipse/workspace/Testing/src/com/company/en-pos-maxent.bin");
+  	  modelIn = new FileInputStream("/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin");
   	  model = new POSModel(modelIn);
   	}
   	catch (IOException e) {
@@ -50,7 +51,6 @@ public class Sentence {
   	    }
   	  }
   	}
-
   	POSTaggerME tagger = new POSTaggerME(model);
 
   	return tagger;
@@ -59,7 +59,6 @@ public class Sentence {
   //sets the score of the sentence
   public boolean scoreSentence() {
     int count = 0;
-    this.checkBadWord();
     for(int i = 0;i < words.size();i++){
     	int temp = words.get(i).getInstances();
     	
@@ -118,7 +117,10 @@ public class Sentence {
     this.points = i;
   }
 
-
+  public int getIndexInArticle(){
+	  return this.indexInArticle;
+  }
+  
  
 
     
