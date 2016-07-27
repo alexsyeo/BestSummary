@@ -80,7 +80,7 @@ public class Sentence {
 
 
   //getters and setters for anaphors
-  public boolean containsAnaphor() {
+  public boolean getAnaphor() {
     return this.anaphor;
   }
   public void setAnaphor(boolean i) {
@@ -88,7 +88,7 @@ public class Sentence {
   }
 
   //getters and setters for transitions
-  public boolean containsTransition() {
+  public boolean getTransition() {
     return this.transition;
   }
   public void setTransition(boolean i) {
@@ -96,7 +96,7 @@ public class Sentence {
   }
   
   //getters and setters for properNoun
-  public boolean containsProperNoun() {
+  public boolean getProperNoun() {
     return this.properNoun;
   }
   public void setProperNoun(boolean i) {
