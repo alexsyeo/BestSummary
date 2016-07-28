@@ -57,7 +57,7 @@ public class Sentence {
   }
   
   //sets the score of the sentence
-  public boolean scoreSentence() {
+  public boolean scoreSentence(Article article) {
     int count = 0;
     for(int i = 0;i < words.size();i++){
     	int temp = words.get(i).getInstances()*100;
@@ -75,6 +75,10 @@ public class Sentence {
     int ratio = count;
     //We can tweak this for better results
     ratio /= checkBadWords() + 1;
+    
+    //changes the score based on the location of the sentence within the article
+    ratio /= (article.getLength() / (article.getLength() - this.indexInArticle));
+    
     this.setPoints(ratio);
     return true;
   }
