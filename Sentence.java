@@ -35,7 +35,10 @@ public class Sentence {
   	InputStream modelIn = null;
   	POSModel model = null;
   	try {
-  	  modelIn = new FileInputStream("/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin");
+  
+  	  //William: "/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin"
+  	  //Alex: "/Users/alex/BestSummary/bestsummarydevelopment/en-pos-maxent.bin"
+  	  modelIn = new FileInputStream("/Users/alex/BestSummary/bestsummarydevelopment/en-pos-maxent.bin");
   	  model = new POSModel(modelIn);
   	}
   	catch (IOException e) {
