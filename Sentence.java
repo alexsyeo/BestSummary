@@ -15,10 +15,25 @@ public class Sentence {
   private int numWords;
   private int indexInArticle;
   private List<Word> words;
-
+  private String text;
 
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s) {
+	text = s;
+    String OK = "abcdefghijklmnopqrstuvwxyz' ";
+    for (int i = 0; i < s.length(); i++) {
+        boolean isOK = false;
+        for (int j = 0; j < OK.length(); j++) {
+            if (Character.toLowerCase(s.charAt(i)) == OK.charAt(j))
+                isOK = true;
+            if (isOK)
+                break;
+        }
+        if (!isOK) {
+            s = s.substring(0,i) + s.substring(i+1);
+            i--;
+        }
+    }
     words = new ArrayList<Word>();
     String[] temp = s.split(" ");
     POSTaggerME tagger = setupPOSTagger();
@@ -35,11 +50,13 @@ public class Sentence {
   	InputStream modelIn = null;
   	POSModel model = null;
   	try {
-  
-  	  //William: "/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin"
-  	  //Alex: "/Users/alex/BestSummary/bestsummarydevelopment/en-pos-maxent.bin"
-  	  //Jared: "/Users/galbraithja/workspace/Test/en-pos-maxent.bin"
-  	  modelIn = new FileInputStream("/Users/alex/BestSummary/bestsummarydevelopment/en-pos-maxent.bin");
+  		
+//William: "/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin"
+//Alex: "/Users/alex/BestSummary/bestsummarydevelopment/en-pos-maxent.bin"
+//Jared: "/Users/galbraithja/workspace/Test/en-pos-maxent.bin"
+//Sean: "/Users/seanrichardson/BestSummary/src/bestsummarydevelopment/en-pos-maxent.bin"
+  		
+  	  modelIn = new FileInputStream("/Users/seanrichardson/BestSummary/src/bestsummarydevelopment/en-pos-maxent.bin");
   	  model = new POSModel(modelIn);
   	}
   	catch (IOException e) {
@@ -138,10 +155,6 @@ public class Sentence {
 
   //to-string method
   public String toString() {
-    String j = "";
-    for (int i = 0; i < words.size(); i++) {
-      j += words.get(i) + " ";
-    }
-    return j;
+	  return text;
   }
 }
