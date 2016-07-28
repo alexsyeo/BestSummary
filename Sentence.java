@@ -13,7 +13,7 @@ public class Sentence {
   private int numWords;
   private int indexInArticle;
   private List<Word> words;
-
+  private static String[] badList = {"cnn", "caption", "photo", "email", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
 
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s, POSModel model) {
@@ -30,31 +30,33 @@ public class Sentence {
 	  }
   }
   
-  //sets the score of the sentence
+//sets the score of the sentence
   public boolean scoreSentence(Article article) {
-    int count = 0;
-    for(int i = 0;i < words.size();i++){
-    	int temp = words.get(i).getInstances()*100;
-    	String posTemp = words.get(i).getPartOfSpeech();
-    	
-      if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
-        temp *= 2;
-      //we use substrings for the rest of the if statements to catch multiple similar parts of speech
-      else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
-    	temp = 0;
-    
-      count += temp;
-    }
-    //Can adjust this for longer/shorter sentences
-    int ratio = count;
-    //We can tweak this for better results
-    ratio /= checkBadWords() + 1;
-    
-    //changes the score based on the location of the sentence within the article
-    ratio /= (article.getLength() / (article.getLength() - this.indexInArticle));
-    
-    this.setPoints(ratio);
-    return true;
+	  this.points = instancePoints();
+	  this.points /= (checkBadWords() + 1);
+	  
+	  //changes the score based on the location of the sentence within the article
+	  this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
+	  if (checkBadList())
+		  this.points = 0;
+	  return true;
+  }
+  
+  public int instancePoints() {
+	  int count = 0;
+	    for(int i = 0;i < words.size();i++){
+	    	int temp = words.get(i).getInstances()*100;
+	    	String posTemp = words.get(i).getPartOfSpeech();
+	    	
+	      if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
+	        temp *= 2;
+	      //we use substrings for the rest of the if statements to catch multiple similar parts of speech
+	      else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
+	    	temp = 0;
+	    
+	      count += temp;
+	    }
+	  return count;
   }
     
   //checks to see if there is a "bad" word in the sentence
@@ -69,7 +71,17 @@ public class Sentence {
 	    return badWords;
 	}
 
-
+	//checks to see if there is unnecessary info in the sentence
+		public boolean checkBadList() {
+			for (int i = 0; i < words.size(); i++) {
+				for (int k = 0; k < badList.length; k++) {
+					if (words.get(i).equals(badList[k]))
+						return true;
+				}
+			}
+			return false;
+		}
+	
   //getters and setters for number of words in the sentence
   public int getNumWords(){
 	  return this.numWords;
