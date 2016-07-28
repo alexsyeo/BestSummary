@@ -61,7 +61,7 @@ public class ArticleReceiver {
 					if (urlAddress.equals(Main.BBC_URL)) {
 						newsLinks.remove(0);
 						newsLinks.remove(0);
-					}else if(urlAddress.equals(Main.CNN_URL) || urlAddress.equals(Main.FOX_URL)){
+					}else if(urlAddress.equals(Main.CNN_URL) || urlAddress.equals(Main.FOX_URL) || urlAddress.equals(Main.ESPN_URL)){
 						newsLinks.remove(0);
 					}
 				} else {
@@ -82,6 +82,9 @@ public class ArticleReceiver {
 						Elements element = doc.select("section");
 						article = element.text();
 					} else if (urlAddress.equals(Main.BBC_URL)) {
+						Elements element = doc.select("p");
+						article = element.text();
+					}else if(urlAddress.equals(Main.ESPN_URL)){
 						Elements element = doc.select("p");
 						article = element.text();
 					}
