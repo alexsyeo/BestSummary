@@ -13,7 +13,7 @@ public class Sentence {
 
   private int points;
   private int numWords;
-  private boolean badWord;
+  private int indexInArticle;
   private List<Word> words;
 
 
@@ -35,7 +35,7 @@ public class Sentence {
   	InputStream modelIn = null;
   	POSModel model = null;
   	try {
-  	  modelIn = new FileInputStream("/Users/williamadriance/eclipse/workspace/Testing/src/com/company/en-pos-maxent.bin");
+  	  modelIn = new FileInputStream("/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin");
   	  model = new POSModel(modelIn);
   	}
   	catch (IOException e) {
@@ -51,11 +51,45 @@ public class Sentence {
   	    }
   	  }
   	}
-
   	POSTaggerME tagger = new POSTaggerME(model);
 
   	return tagger;
   }
+  
+  //sets the score of the sentence
+  public boolean scoreSentence() {
+    int count = 0;
+    for(int i = 0;i < words.size();i++){
+    	int temp = words.get(i).getInstances()*100;
+    	String posTemp = words.get(i).getPartOfSpeech();
+    	
+      if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
+        temp *= 2;
+      //we use substrings for the rest of the if statements to catch multiple similar parts of speech
+      else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.substring(0,2).equals("RB"))
+    	temp = 0;
+    
+      count += temp;
+    }
+    //Can adjust this for longer/shorter sentences
+    int ratio = count;
+    //We can tweak this for better results
+    ratio /= checkBadWords() + 1;
+    this.setPoints(ratio);
+    return true;
+  }
+    
+  //checks to see if there is a "bad" word in the sentence
+	public int checkBadWords() {
+	  int badWords = 0;
+	  if (words.size() >= 6) {
+		  for (int i = 0; i < 6; i++) {
+		    if (words.get(i).getPartOfSpeech().substring(0,2).equals("WP") || (words.get(i).getPartOfSpeech().length() > 2 && words.get(i).getPartOfSpeech().substring(0,3).equals("PRP")))
+		      badWords++;
+		  }
+	  }
+	    return badWords;
+	}
 
 
   //getters and setters for number of words in the sentence
@@ -77,30 +111,6 @@ public class Sentence {
   }
 
 
-  //getters and setter for badWord
-  public boolean getBadWord() {
-    return this.badWord;
-  }
-  public void setBadWord(boolean i) {
-    this.badWord = i;
-  }
-
-  //checks to see if there is a "bad" word in the sentence
-  public void checkBadWord() {
-    boolean k = false;
-    for (int i = 0; i < words.size(); i++) {
-      if (words.getWord(i).getPartOfSpeech().substring(0,2).equals("WP") || (words.getWord(i).getPartOfSpeech().length() > 2 && words.getWord(i).getPartOfSpeech().substring(0,3).equals("PRP")))
-        k = true;
-    }
-    if (k)
-      this.badWord = true;
-    else
-      this.badWord = false;
-  }
-
-
-
-
   //getters and setters for points
   public int getPoints() {
     return this.points;
@@ -108,28 +118,14 @@ public class Sentence {
   public void setPoints(int i) {
     this.points = i;
   }
-
-
-  //sets the score of the sentence
-  public boolean scoreSentence() {
-    int count = 0;
-    this.checkBadWord();
-    for(int i = 0;i < words.size();i++){
-      if (words.get(i).getPartOfSpeech().substring(0,3).equals("NNP"))
-        count += (words.get(i).getInstances() * 2);
-      else if (words.get(i).getPartOfSpeech().substring(0,2).equals("CC") || words.get(i).getPartOfSpeech().substring(0,2).equals("IN"))
-        count += 0;
-      else
-        count += words.get(i).getInstances();
-    }
-
-    int ratio = count / words.size();
-    if (this.getBadWord())
-      ratio = ratio / 2;
-    this.points = ratio;
-    return true;
+  
+  public void setIndexInArticle(int i) {
+	  this.indexInArticle = i;
   }
 
+  public int getIndexInArticle(){
+	  return this.indexInArticle;
+  }
 
   //to-string method
   public String toString() {
