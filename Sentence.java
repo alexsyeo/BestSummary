@@ -1,8 +1,6 @@
+
 package bestsummarydevelopment;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,66 +13,21 @@ public class Sentence {
   private int numWords;
   private int indexInArticle;
   private List<Word> words;
-  private String text;
+
 
   //constructor, creates a sentence that is split up by spaces
-  public Sentence(String s) {
-	text = s;
-    String OK = "abcdefghijklmnopqrstuvwxyz' ";
-    for (int i = 0; i < s.length(); i++) {
-        boolean isOK = false;
-        for (int j = 0; j < OK.length(); j++) {
-            if (Character.toLowerCase(s.charAt(i)) == OK.charAt(j))
-                isOK = true;
-            if (isOK)
-                break;
-        }
-        if (!isOK) {
-            s = s.substring(0,i) + s.substring(i+1);
-            i--;
-        }
-    }
-    words = new ArrayList<Word>();
-    String[] temp = s.split(" ");
-    POSTaggerME tagger = setupPOSTagger();
-    //array of parts of speech corresponding to each word in the string
-    String[] POS = tagger.tag(temp);
-    for (int i = 0; i < temp.length; i++) {
-      words.add(new Word(temp[i], POS[i]));
-    }
-    this.numWords = temp.length;
-  }
-
-  //sets up the part of speech tagger
-  public POSTaggerME setupPOSTagger(){
-  	InputStream modelIn = null;
-  	POSModel model = null;
-  	try {
-  		
-//William: "/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin"
-//Alex: "/Users/alex/BestSummary/bestsummarydevelopment/en-pos-maxent.bin"
-//Jared: "/Users/galbraithja/workspace/Test/en-pos-maxent.bin"
-//Sean: "/Users/seanrichardson/BestSummary/src/bestsummarydevelopment/en-pos-maxent.bin"
-  		
-  	  modelIn = new FileInputStream("/Users/seanrichardson/BestSummary/src/bestsummarydevelopment/en-pos-maxent.bin");
-  	  model = new POSModel(modelIn);
-  	}
-  	catch (IOException e) {
-  	  // Model loading failed, handle the error
-  	  e.printStackTrace();
-  	}
-  	finally {
-  	  if (modelIn != null) {
-  	    try {
-  	      modelIn.close();
-  	    }
-  	    catch (IOException e) {
-  	    }
-  	  }
-  	}
-  	POSTaggerME tagger = new POSTaggerME(model);
-
-  	return tagger;
+  public Sentence(String s, POSModel model) {
+	  words = new ArrayList<Word>();
+	  if(model != null){
+		POSTaggerME tagger = new POSTaggerME(model);
+	    String[] temp = s.split(" ");
+	    //array of parts of speech corresponding to each word in the string
+	    String[] POS = tagger.tag(temp);
+	    for (int i = 0; i < temp.length; i++) {
+	      words.add(new Word(temp[i], POS[i]));
+	    }
+	    this.numWords = temp.length;
+	  }
   }
   
   //sets the score of the sentence
@@ -109,8 +62,7 @@ public class Sentence {
 	  int badWords = 0;
 	  if (words.size() >= 6) {
 		  for (int i = 0; i < 6; i++) {
-			String temp = words.get(i).getPartOfSpeech();
-		    if (temp.equals("WP") || (temp.length() > 2 && temp.equals("PRP")))
+		    if (words.get(i).getPartOfSpeech().equals("WP") || (words.get(i).getPartOfSpeech().length() > 2 && words.get(i).getPartOfSpeech().equals("PRP")))
 		      badWords++;
 		  }
 	  }
@@ -155,6 +107,10 @@ public class Sentence {
 
   //to-string method
   public String toString() {
-	  return text;
+    String j = "";
+    for (int i = 0; i < words.size(); i++) {
+      j += words.get(i) + " ";
+    }
+    return j;
   }
 }
