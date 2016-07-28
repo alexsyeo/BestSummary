@@ -66,7 +66,7 @@ public class Sentence {
       if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
         temp *= 2;
       //we use substrings for the rest of the if statements to catch multiple similar parts of speech
-      else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.substring(0,2).equals("RB"))
+      else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
     	temp = 0;
     
       count += temp;
@@ -88,7 +88,8 @@ public class Sentence {
 	  int badWords = 0;
 	  if (words.size() >= 6) {
 		  for (int i = 0; i < 6; i++) {
-		    if (words.get(i).getPartOfSpeech().substring(0,2).equals("WP") || (words.get(i).getPartOfSpeech().length() > 2 && words.get(i).getPartOfSpeech().substring(0,3).equals("PRP")))
+			String temp = words.get(i).getPartOfSpeech();
+		    if (temp.equals("WP") || (temp.length() > 2 && temp.equals("PRP")))
 		      badWords++;
 		  }
 	  }
