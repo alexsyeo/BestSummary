@@ -1,6 +1,11 @@
-//package bestsummarydevelopment;
+package bestsummarydevelopment;
 
-import java.util.ArrayList;
+import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class WordCounter {
     String article;
@@ -10,20 +15,41 @@ public class WordCounter {
         article = a;
     }
     public Sentence[] makeSentences() {
-    	int mark = 0;
-    	//Divides article into sentence length Strings and then feeds those strings into the Sentence constructor.
-    	ArrayList<Sentence> sentenceList = new ArrayList<Sentence>();
-    	for (int i = 0; i < article.length(); i++) {
-			if (article.charAt(i) == '.' || article.charAt(i) == '!' || article.charAt(i) == '?') {
-				Sentence sentence = new Sentence(article.substring(mark,i + 1));
-				sentenceList.add(sentence);
-				mark = i + 2;
-				//assuming there will always be spaces at the beginning of each sentence. we should change this later
-			}
-		}
-    	sentences = new Sentence[sentenceList.size()];
-    	for (int i = 0; i < sentenceList.size(); i++) {
-    		sentences[i] = sentenceList.get(i);
+    	SentenceModel model = null;
+    	InputStream modelIn = null;
+    	try {
+    		//we should put all of our file paths in comments here
+    		//Alex: "/Users/alex/BestSummary/bestsummarydevelopment/en-sent.bin"
+    		//William:
+    		//Sean:
+    		//Jared:
+    		
+    	  modelIn = new FileInputStream("/Users/alex/BestSummary/bestsummarydevelopment/en-sent.bin");
+    	  model = new SentenceModel(modelIn);
+    	}
+    	catch (IOException e) {
+    	  e.printStackTrace();
+    	}
+    	finally {
+    	  if (modelIn != null) {
+    	    try {
+    	      modelIn.close();
+    	    }
+    	    catch (IOException e) {
+    	    }
+    	  }
+    	}
+    	
+    	//initializes sentence detector
+    	SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
+
+    	String[] sentencesTemp = sentenceDetector.sentDetect(article);
+    	
+    	sentences = new Sentence[sentencesTemp.length];
+    	for (int i = 0; i < sentencesTemp.length; i++) {
+    		sentences[i] = new Sentence(sentencesTemp[i]);
+    		//I added the line of code below to set the location of each sentence in the article
+    		sentences[i].setIndexInArticle(i);
     	}
     	setWordNumbers();
     	return sentences;
@@ -50,68 +76,4 @@ public class WordCounter {
     		}
     	}
     }
-    /*public Word[] countWords() {
-    //Removing Punctuation:
-        String cleanArticle = article;
-        String OK = "abcdefghijklmnopqrstuvwxyz ";
-        for (int i = 0; i < cleanArticle.length(); i++) {
-            boolean isOK = false;
-            for (int j = 0; j < OK.length(); j++) {
-                if (Character.toLowerCase(cleanArticle.charAt(i)) == OK.charAt(j))
-                    isOK = true;
-                if (isOK)
-                    break;
-            }
-            if (!isOK) {
-                cleanArticle = cleanArticle.substring(0,i) + cleanArticle.substring(i+1);
-                i--;
-            }
-        }
-    //Creating String array where each word appears once
-    //Creating a corresponding Integer array that counts how many times each word appears
-        String[] words  = cleanArticle.split(" ");
-        ArrayList<String> wordList = new ArrayList<String>();
-        for (int i = 0; i < words.length; i++) {
-            if (!words[i].equals(""))
-                wordList.add(words[i]);
-        }
-        ArrayList<String> oneWordList = new ArrayList<String>();
-        ArrayList<Integer> wordCountList = new ArrayList<Integer>();
-        for (int i = 0; i < wordList.size(); i++) {
-            oneWordList.add(wordList.get(i));
-            wordCountList.add(1);
-            for (int j = i+1; j < wordList.size(); j++) {
-                if (wordList.get(i).equals(wordList.get(j))) {
-                    wordCountList.set(wordCountList.size()-1, wordCountList.get(wordCountList.size()-1)+1);
-                    wordList.remove(j);
-                    j--;
-                }
-            }
-        }
-        String[] commonWords = new String[oneWordList.size()];
-        int[] wordCount = new int[oneWordList.size()];
-        for (int i = 0; i < commonWords.length; i++) {
-            commonWords[i] = oneWordList.get(i);
-            wordCount[i] = wordCountList.get(i);
-        }
-    //Reordering the array of words from most common to least common
-        for (int i = 0; i < commonWords.length; i++) {
-            for (int j = i+1; j < commonWords.length; j++) {
-                if (wordCount[j] > wordCount[i]) {
-                    int hold = wordCount[j];
-                    wordCount[j] = wordCount[i];
-                    wordCount[i] = hold;
-                    String holder = commonWords[j];
-                    commonWords[j] = commonWords[i];
-                    commonWords[i] = holder;
-                }
-            }
-        }
-    //Return:
-        Word[] ret = new Word[commonWords.length];
-        for (int i = 0; i < commonWords.length; i++) {
-            ret[i] = new Word(commonWords[i], wordCount[i]);
-        }
-        return ret;
-    }*/
 }
