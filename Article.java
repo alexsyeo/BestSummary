@@ -41,7 +41,7 @@ public class Article {
 
 		// initialize top array with blank sentences
 		for (int i = 0; i < top.length; i++) {
-			top[i] = new Sentence("");
+			top[i] = new Sentence("", null);
 		}
 
 		// get best sentences
