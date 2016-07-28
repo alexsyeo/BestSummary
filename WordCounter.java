@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+
 public class WordCounter {
     String article;
     Sentence[] sentences;
@@ -24,8 +25,8 @@ public class WordCounter {
     		//William:
     		//Sean:
     		//Jared:
-    		
-    	  modelIn = new FileInputStream("/Users/galbraithja/workspace/Test/en-sent.bin");
+
+    	  modelIn = new FileInputStream("en-sent.bin");
     	  model = new SentenceModel(modelIn);
     	}
     	catch (IOException e) {
@@ -48,7 +49,6 @@ public class WordCounter {
     	sentences = new Sentence[sentencesTemp.length];
     	POSModel pos = setupPOSTagger();
     	for (int i = 0; i < sentencesTemp.length; i++) {
-    		//SLOW
     		sentences[i] = new Sentence(sentencesTemp[i], pos);
     		//I added the line of code below to set the location of each sentence in the article
     		sentences[i].setIndexInArticle(i);
@@ -63,7 +63,7 @@ public class WordCounter {
     	InputStream modelIn = null;
     	POSModel model = null;
     	try {
-    	  modelIn = new FileInputStream("/Users/galbraithja/workspace/Test/en-pos-maxent.bin");
+    	  modelIn = new FileInputStream("en-pos-maxent.bin");
     	  model = new POSModel(modelIn);
     	}
     	catch (IOException e) {
