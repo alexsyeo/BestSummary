@@ -75,7 +75,7 @@ public class Sentence {
 		public boolean checkBadList() {
 			for (int i = 0; i < words.size(); i++) {
 				for (int k = 0; k < badList.length; k++) {
-					if (words.get(i).equals(badList[k]))
+					if (words.get(i).toString().toLowerCase().equals(badList[k]))
 						return true;
 				}
 			}
@@ -126,6 +126,6 @@ public class Sentence {
     return j;
   }
   public String getInfo() {
-	  return "Index:\t" + this.indexInArticle + "NumberOfWords:\t" + this.numWords + "Points:\t" + this.points;
+	  return "Index:\t" + this.indexInArticle + "\tNumberOfWords:\t" + this.numWords + "\tPoints:\t" + this.points;
   }
 }
