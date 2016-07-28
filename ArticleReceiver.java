@@ -1,3 +1,4 @@
+package bestsummarydevelopment;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,7 +13,7 @@ import org.jsoup.select.Elements;
 
 public class ArticleReceiver {
 
-	private ArrayList<String> newsArticles = new ArrayList<>();
+	private ArrayList<Article> newsArticles = new ArrayList<>();
 	private ArrayList<String> newsLinks = new ArrayList<>();
 
 	public ArticleReceiver(int numArticles, String link) {
@@ -71,19 +72,19 @@ public class ArticleReceiver {
 					Document doc = Jsoup.connect(newsLink).get();
 
 					// get article from different websites
+					String article = null;
 					if (urlAddress.equals(Main.FOX_URL)) {
 						Elements element = doc.select("p");
-						String article = element.text();
-						newsArticles.add(article);
+						article = element.text();
 					} else if (urlAddress.equals(Main.CNN_URL)) {
 						Elements element = doc.select("section");
-						String article = element.text();
-						newsArticles.add(article);
+						article = element.text();
 					} else if (urlAddress.equals(Main.BBC_URL)) {
 						Elements element = doc.select("p");
-						String article = element.text();
-						newsArticles.add(article);
+						article = element.text();
 					}
+					
+					newsArticles.add(new Article(article, Main.SUMMARY_SENTENCES));
 				}
 
 			} catch (IOException e) {
@@ -95,13 +96,13 @@ public class ArticleReceiver {
 		}
 	}
 
-	public ArrayList<String> getArticles() {
+	public ArrayList<Article> getArticles() {
 		return newsArticles;
 	}
 
-	public String getArticle(int i) {
+	public Article getArticle(int i) {
 		if (newsArticles.size() <= i) {
-			return "Null pointer exception";
+			return null;
 		} else {
 			return newsArticles.get(i);
 		}
