@@ -60,8 +60,10 @@ public class ArticleReceiver {
 				if (!newsLinks.isEmpty()) {
 					if (urlAddress.equals(Main.BBC_URL)) {
 						newsLinks.remove(0);
+						newsLinks.remove(0);
+					}else if(urlAddress.equals(Main.CNN_URL) || urlAddress.equals(Main.FOX_URL)){
+						newsLinks.remove(0);
 					}
-					newsLinks.remove(0);
 				} else {
 					System.out.println("ERROR: No Found Articles. Check If You Have Wifi.");
 				}
