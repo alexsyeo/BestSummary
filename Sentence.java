@@ -13,7 +13,7 @@ public class Sentence {
   private int numWords;
   private int indexInArticle;
   private List<Word> words;
-  private static String[] badList = {"cnn", "caption", "photo", "email", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
+  private static String[] badList = {"cnn", "caption", "photo", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
 
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s, POSModel model) {
