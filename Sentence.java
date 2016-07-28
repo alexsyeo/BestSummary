@@ -125,4 +125,7 @@ public class Sentence {
     }
     return j;
   }
+  public String getInfo() {
+	  return "Index:\t" + this.indexInArticle + "NumberOfWords:\t" + this.numWords + "Points:\t" + this.points;
+  }
 }
