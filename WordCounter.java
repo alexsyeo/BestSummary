@@ -1,5 +1,6 @@
 package bestsummarydevelopment;
 
+import opennlp.tools.postag.POSModel;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 
@@ -24,7 +25,7 @@ public class WordCounter {
     		//Sean:
     		//Jared:
     		
-    	  modelIn = new FileInputStream("/Users/alex/BestSummary/bestsummarydevelopment/en-sent.bin");
+    	  modelIn = new FileInputStream("/Users/galbraithja/workspace/Test/en-sent.bin");
     	  model = new SentenceModel(modelIn);
     	}
     	catch (IOException e) {
@@ -42,17 +43,43 @@ public class WordCounter {
     	
     	//initializes sentence detector
     	SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
-
     	String[] sentencesTemp = sentenceDetector.sentDetect(article);
     	
     	sentences = new Sentence[sentencesTemp.length];
+    	POSModel pos = setupPOSTagger();
     	for (int i = 0; i < sentencesTemp.length; i++) {
-    		sentences[i] = new Sentence(sentencesTemp[i]);
+    		//SLOW
+    		sentences[i] = new Sentence(sentencesTemp[i], pos);
     		//I added the line of code below to set the location of each sentence in the article
     		sentences[i].setIndexInArticle(i);
     	}
     	setWordNumbers();
+    	
     	return sentences;
+    }
+    
+  //sets up the part of speech tagger
+    public POSModel setupPOSTagger(){
+    	InputStream modelIn = null;
+    	POSModel model = null;
+    	try {
+    	  modelIn = new FileInputStream("/Users/galbraithja/workspace/Test/en-pos-maxent.bin");
+    	  model = new POSModel(modelIn);
+    	}
+    	catch (IOException e) {
+    	  // Model loading failed, handle the error
+    	  e.printStackTrace();
+    	}
+    	finally {
+    	  if (modelIn != null) {
+    	    try {
+    	      modelIn.close();
+    	    }
+    	    catch (IOException e) {
+    	    }
+    	  }
+    	}
+    	return model;
     }
     
     public void setWordNumbers() {
