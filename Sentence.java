@@ -14,8 +14,9 @@ public class Sentence {
   private int indexInArticle;
   private List<Word> words;
   private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
-  private static int NOUN_WEIGHT = 2;
-  private static int PROPER_NOUN_WEIGHT = 4;
+  private static double NOUN_WEIGHT = 2;
+  private static double PROPER_NOUN_WEIGHT = 4;
+  private static double VERB_WEIGHT = 0.5;
   
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s, POSModel model) {
@@ -44,9 +45,9 @@ public class Sentence {
   }
   
   public int instancePoints() {
-	  int count = 0;
+	  double count = 0;
 	    for(int i = 0;i < words.size();i++){
-	    	int temp = words.get(i).getInstances()*100;
+	    	double temp = words.get(i).getInstances()*100;
 	    	String posTemp = words.get(i).getPartOfSpeech();
 	   
 	    	//multiplies by 2 if the word is a proper noun
@@ -60,7 +61,7 @@ public class Sentence {
 	    
 	      count += temp;
 	    }
-	  return count;
+	  return (int)count;
   }
     
   //checks to see if there is a "bad" word in the sentence
