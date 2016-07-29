@@ -24,16 +24,21 @@ public class Article {
 		// by using the Sentence constructor, feeding in
 		// the Strings. This way, the code below will work.
 		// NOT EVERY PERIOD WILL SIGNIFY THE END OF A SENTENCE. WE NEED IF
-		// STATEMENTS (if it's not Mr., Dr., Mrs., etc.)
+		// STATEMENTS (if it's not Mr., Mrs., etc.)
 
 		//find best sentences for the summary
 		bestSentences = findBestSentences();
 
-		//temp print best sentences
+		//print best sentences
 		for (int i = 0; i < bestSentences.length; i++) {
 			System.out.println(bestSentences[i]);
 		}
-
+		
+		//prints the info of each sentence
+		for (int i = 0; i < bestSentences.length; i++) {
+			System.out.println(bestSentences[i].getInfo());
+		}
+		System.out.println();
 	}
 
 	private Sentence[] findBestSentences() {
