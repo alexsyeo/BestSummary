@@ -13,7 +13,7 @@ public class Sentence {
   private int numWords;
   private int indexInArticle;
   private List<Word> words;
-  private static String[] badList = {"cnn", "caption", "photo", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
+  private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
   private static int NOUN_WEIGHT = 2;
   private static int PROPER_NOUN_WEIGHT = 4;
   
@@ -38,7 +38,7 @@ public class Sentence {
 	  
 	  //changes the score based on the location of the sentence within the article
 	  this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
-	  if (checkBadList() || this.checkBadWords())
+	  if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
 		  this.points = 0;
 	  return true;
   }
@@ -78,12 +78,20 @@ public class Sentence {
 
 	//checks to see if there is unnecessary info in the sentence
 		public boolean checkBadList() {
+			//goes through badList
 			for (int i = 0; i < words.size(); i++) {
 				for (int k = 0; k < badList.length; k++) {
 					if (words.get(i).toString().toLowerCase().equals(badList[k]))
 						return true;
 				}
 			}
+			return false;
+		}
+	//checks to see if the first word in the sentence is a conjunction
+		public boolean checkFirstWord() {
+			String sub = words.get(0).getPartOfSpeech();
+			if (sub.equals("CC") || sub.equals("IN"))
+				return true;
 			return false;
 		}
 	
