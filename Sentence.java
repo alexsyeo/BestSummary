@@ -13,6 +13,7 @@ public class Sentence {
   private int numWords;
   private int indexInArticle;
   private List<Word> words;
+  private String text;
   private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
   private static double NOUN_WEIGHT = 2;
   private static double PROPER_NOUN_WEIGHT = 4;
@@ -23,6 +24,21 @@ public class Sentence {
   
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s, POSModel model) {
+	  text = s;
+	    String OK = "abcdefghijklmnopqrstuvwxyz' ";
+	    for (int i = 0; i < s.length(); i++) {
+	        boolean isOK = false;
+	        for (int j = 0; j < OK.length(); j++) {
+	            if (Character.toLowerCase(s.charAt(i)) == OK.charAt(j))
+	                isOK = true;
+	            if (isOK)
+	                break;
+	        }
+	        if (!isOK) {
+	            s = s.substring(0,i) + s.substring(i+1);
+	            i--;
+	        }
+	    }
 	  words = new ArrayList<Word>();
 	  if(model != null){
 		POSTaggerME tagger = new POSTaggerME(model);
@@ -142,11 +158,7 @@ public class Sentence {
 
   //to-string method
   public String toString() {
-    String j = "";
-    for (int i = 0; i < words.size(); i++) {
-      j += words.get(i) + " ";
-    }
-    return j;
+    return text;
   }
   public String getInfo() {
 	  return "Index:\t" + this.indexInArticle + "\tNumberOfWords:\t" + this.numWords + "\tPoints:\t" + this.points;
