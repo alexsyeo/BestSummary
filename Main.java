@@ -9,26 +9,30 @@ public class Main {
 	public static final String FOX_URL = "http://feeds.foxnews.com/foxnews/most-popular";
 	public static final String BBC_URL = "http://feeds.bbci.co.uk/news/rss.xml";
 	public static final String ESPN_URL = "http://espn.go.com/espn/rss/news";
-	public static final int SUMMARY_SENTENCES = 3;
+	public static final String US_URL = "http://www.usnews.com/rss/news";
+	public static final int SUMMARY_SENTENCES = 5;
 
 	public static void main(String[] args) {
 		// Get top stories from news sources
 
 		// CNN
-		// ArticleReceiver receiver1 = new ArticleReceiver(2, CNN_URL);
-		// articles.addAll(receiver1.getArticles());
+		ArticleReceiver receiver = new ArticleReceiver(1, CNN_URL);
+		articles.addAll(receiver.getArticles());
 
 		// FOX
-		//ArticleReceiver receiver2 = new ArticleReceiver(20, FOX_URL);
-		//articles.addAll(receiver2.getArticles());
+		receiver = new ArticleReceiver(1, FOX_URL);
+		articles.addAll(receiver.getArticles());
 
 		// BBC
-		// ArticleReceiver receiver3 = new ArticleReceiver(1, BBC_URL);
-		// articles.addAll(receiver3.getArticles());
+		receiver = new ArticleReceiver(1, BBC_URL);
+		articles.addAll(receiver.getArticles());
 
-		// FOX
-		ArticleReceiver receiver4 = new ArticleReceiver(20, ESPN_URL);
-		articles.addAll(receiver4.getArticles());
-
+		// ESPN
+		receiver = new ArticleReceiver(1, ESPN_URL);
+		articles.addAll(receiver.getArticles());
+		
+		//US
+		receiver = new ArticleReceiver(1, US_URL);
+		articles.addAll(receiver.getArticles());
 	}
 }
