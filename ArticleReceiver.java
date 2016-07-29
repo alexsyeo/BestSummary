@@ -1,5 +1,12 @@
 package bestsummarydevelopment;
 
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
+import de.l3s.boilerpipe.document.TextDocument;
+import de.l3s.boilerpipe.extractors.CommonExtractors;
+import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
+import de.l3s.boilerpipe.sax.HTMLDocument;
+import de.l3s.boilerpipe.sax.HTMLFetcher;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,16 +15,20 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.xml.sax.SAXException;
 
 public class ArticleReceiver {
 
 	private ArrayList<Article> newsArticles = new ArrayList<>();
 	private ArrayList<String> newsLinks = new ArrayList<>();
 
-	public ArticleReceiver(int numArticles, String link) {
+	public ArticleReceiver(int numArticles, String link) throws BoilerpipeProcessingException, SAXException {
 		if (numArticles != 0) {
 			receiveNewsArticles(numArticles, link);
 		}else{
@@ -25,7 +36,7 @@ public class ArticleReceiver {
 		}
 	}
 
-	private void receiveNewsArticles(int numArticles, String urlAddress) {
+	private void receiveNewsArticles(int numArticles, String urlAddress) throws BoilerpipeProcessingException, SAXException {
 		URL rssUrl = null;
 		// if connected to Internet
 		if (internetIsAvailable()) {
@@ -39,7 +50,7 @@ public class ArticleReceiver {
 				if (urlAddress.equals(Main.BBC_URL)) {
 					numArticles++;
 				}
-
+				
 				while ((line = in.readLine()) != null && newsLinks.size() <= numArticles) {
 					if (line.contains("<link>")) {
 						// find links through tags
@@ -62,7 +73,7 @@ public class ArticleReceiver {
 					if (urlAddress.equals(Main.BBC_URL)) {
 						newsLinks.remove(0);
 						newsLinks.remove(0);
-					}else if(urlAddress.equals(Main.CNN_URL) || urlAddress.equals(Main.FOX_URL) || urlAddress.equals(Main.ESPN_URL)){
+					}else{
 						newsLinks.remove(0);
 					}
 				} else {
@@ -75,22 +86,37 @@ public class ArticleReceiver {
 					Document doc = Jsoup.connect(newsLink).get();
 
 					// get article from different websites
-					String article = null;
-					if (urlAddress.equals(Main.FOX_URL)) {
-						Elements element = doc.select("p");
-						article = element.text();
-					} else if (urlAddress.equals(Main.CNN_URL)) {
+					String articleA = null;
+					
+					//BoilerPipe:
+					final HTMLDocument htmlDoc = HTMLFetcher.fetch(new URL(newsLink));
+					final TextDocument docB = new BoilerpipeSAXInput(htmlDoc.toInputSource()).getTextDocument();
+					String articleB = CommonExtractors.ARTICLE_EXTRACTOR.getText(docB);
+					
+					// get article from different websites
+					if (urlAddress.equals(Main.CNN_URL)) {
 						Elements element = doc.select("section");
-						article = element.text();
-					} else if (urlAddress.equals(Main.BBC_URL)) {
+						articleA = element.text();
+					}else{
 						Elements element = doc.select("p");
-						article = element.text();
-					}else if(urlAddress.equals(Main.ESPN_URL)){
-						Elements element = doc.select("p");
-						article = element.text();
+						articleA = element.text();
 					}
 					
+					String article = foxMerge(articleA, articleB);
+					
+					/*System.out.println(articleA + "\n\n\n");
+					System.out.println(articleB + "\n\n\n");
+					System.out.println(article);*/
+					
+					
+					/*System.out.println(articleB);
+					System.out.println("\n=====A:====");
+					newsArticles.add(new Article(articleA, Main.SUMMARY_SENTENCES));
+					System.out.println("\n=====B:====");
+					newsArticles.add(new Article(articleB, Main.SUMMARY_SENTENCES));*/
+					
 					newsArticles.add(new Article(article, Main.SUMMARY_SENTENCES));
+	
 				}
 
 			} catch (IOException e) {
@@ -100,6 +126,32 @@ public class ArticleReceiver {
 			System.out.println("ERROR: No internet connection established.");
 			return;
 		}
+	}
+
+	private String foxMerge(String articleA, String articleB) {
+		int maxCount = 0;
+		int maxIndex = 0;
+		//runs through possible starting indexes of articleB
+		for (int i = 0; i < articleB.length(); i++) {
+			//counts how many characters are equal
+			int count = 0;
+			int max = articleA.length();
+			if (articleB.length()-i < max)
+				max = articleB.length()-i;
+			for (int j = 0; j < max; j++) {
+				if (articleA.charAt(j) == articleB.charAt(i+j)) {
+					count++;
+					if (count > maxCount) {
+						maxCount = count;
+						maxIndex = i;
+					}
+				}
+				else {
+					break;
+				}
+			}
+		}
+		return articleB.substring(maxIndex);
 	}
 
 	public ArrayList<Article> getArticles() {
