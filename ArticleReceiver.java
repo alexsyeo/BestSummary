@@ -1,5 +1,4 @@
 package bestsummarydevelopment;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,6 +6,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,7 +41,7 @@ public class ArticleReceiver {
 				if (urlAddress.equals(Main.BBC_URL)) {
 					numArticles++;
 				}
-
+				
 				while ((line = in.readLine()) != null && newsLinks.size() <= numArticles) {
 					if (line.contains("<link>")) {
 						// find links through tags
@@ -62,7 +64,7 @@ public class ArticleReceiver {
 					if (urlAddress.equals(Main.BBC_URL)) {
 						newsLinks.remove(0);
 						newsLinks.remove(0);
-					}else if(urlAddress.equals(Main.CNN_URL) || urlAddress.equals(Main.FOX_URL) || urlAddress.equals(Main.ESPN_URL)){
+					}else{
 						newsLinks.remove(0);
 					}
 				} else {
@@ -76,16 +78,10 @@ public class ArticleReceiver {
 
 					// get article from different websites
 					String article = null;
-					if (urlAddress.equals(Main.FOX_URL)) {
-						Elements element = doc.select("p");
-						article = element.text();
-					} else if (urlAddress.equals(Main.CNN_URL)) {
+					if (urlAddress.equals(Main.CNN_URL)) {
 						Elements element = doc.select("section");
 						article = element.text();
-					} else if (urlAddress.equals(Main.BBC_URL)) {
-						Elements element = doc.select("p");
-						article = element.text();
-					}else if(urlAddress.equals(Main.ESPN_URL)){
+					}else{
 						Elements element = doc.select("p");
 						article = element.text();
 					}
