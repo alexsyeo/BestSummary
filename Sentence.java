@@ -16,6 +16,9 @@ public class Sentence {
   private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
   private static double NOUN_WEIGHT = 2;
   private static double PROPER_NOUN_WEIGHT = 4;
+  private static double QUOTATION_WEIGHT = 0.5;
+  
+  //haven't used this yet
   private static double VERB_WEIGHT = 0.5;
   
   //constructor, creates a sentence that is split up by spaces
@@ -61,6 +64,8 @@ public class Sentence {
 	    
 	      count += temp;
 	    }
+	    if(this.containsString("\""))
+	    	count *= QUOTATION_WEIGHT;
 	  return (int)count;
   }
     
@@ -76,25 +81,29 @@ public class Sentence {
 	  }
 	  return false;
 	}
-
+	
 	//checks to see if there is unnecessary info in the sentence
-		public boolean checkBadList() {
-			//goes through badList
-			for (int i = 0; i < words.size(); i++) {
-				for (int k = 0; k < badList.length; k++) {
-					if (words.get(i).toString().toLowerCase().equals(badList[k]))
-						return true;
-				}
+	public boolean checkBadList() {
+		//goes through badList
+		for (int i = 0; i < words.size(); i++) {
+			for (int k = 0; k < badList.length; k++) {
+				if (words.get(i).toString().toLowerCase().equals(badList[k]))
+					return true;
 			}
-			return false;
 		}
+		return false;
+	}
 	//checks to see if the first word in the sentence is a conjunction
-		public boolean checkFirstWord() {
-			String sub = words.get(0).getPartOfSpeech();
-			if (sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB") || words.get(0).toString().toLowerCase().equals("read"))
-				return true;
-			return false;
-		}
+	public boolean checkFirstWord() {
+		String sub = words.get(0).getPartOfSpeech();
+		if (sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB") || words.get(0).toString().toLowerCase().equals("read"))
+			return true;
+		return false;
+	}
+	
+	public boolean containsString(String s){
+		return this.toString().contains(s);
+	}
 	
   //getters and setters for number of words in the sentence
   public int getNumWords(){
