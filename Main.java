@@ -5,34 +5,18 @@ import java.util.ArrayList;
 public class Main {
 
 	private static ArrayList<Article> articles = new ArrayList<>();
-	public static final String CNN_URL = "http://rss.cnn.com/rss/cnn_topstories.rss";
-	public static final String FOX_URL = "http://feeds.foxnews.com/foxnews/most-popular";
-	public static final String BBC_URL = "http://feeds.bbci.co.uk/news/rss.xml";
-	public static final String ESPN_URL = "http://espn.go.com/espn/rss/news";
-	public static final String US_URL = "http://www.usnews.com/rss/news";
+
+	public static final String TOP_STORIES_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&output=rss";
+	public static final String SPORTS_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=s&output=rss";
+	public static final String BUSINESS_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=b&output=rss";
+
 	public static final int SUMMARY_SENTENCES = 5;
 
 	public static void main(String[] args) {
-		// Get top stories from news sources
+		// Get top stories from Google News
 
-		// CNN
-		ArticleReceiver receiver = new ArticleReceiver(1, CNN_URL);
-		articles.addAll(receiver.getArticles());
-
-		// FOX
-		receiver = new ArticleReceiver(1, FOX_URL);
-		articles.addAll(receiver.getArticles());
-
-		// BBC
-		receiver = new ArticleReceiver(1, BBC_URL);
-		articles.addAll(receiver.getArticles());
-
-		// ESPN
-		receiver = new ArticleReceiver(1, ESPN_URL);
-		articles.addAll(receiver.getArticles());
-		
-		//US
-		receiver = new ArticleReceiver(1, US_URL);
-		articles.addAll(receiver.getArticles());
+		//NO MORE THAN 10 ARTICLES
+		ArticleReceiver receiver1 = new ArticleReceiver(10, TOP_STORIES_URL);
+		articles.addAll(receiver1.getArticles());
 	}
 }
