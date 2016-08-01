@@ -1,5 +1,12 @@
 package bestsummarydevelopment;
 
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
+import de.l3s.boilerpipe.document.TextDocument;
+import de.l3s.boilerpipe.extractors.CommonExtractors;
+import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
+import de.l3s.boilerpipe.sax.HTMLDocument;
+import de.l3s.boilerpipe.sax.HTMLFetcher;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
