@@ -3,12 +3,12 @@ package bestsummarydevelopment;
 public class Article {
 
 	private Sentence[] sentences;
-	private int numSentences;
+	private int numSentencesInSummary;
 	private String text;
 	private Sentence[] bestSentences;
 
 	public Article(String s, int numSentences) {
-		this.numSentences = numSentences;
+		this.numSentencesInSummary = numSentences;
 		WordCounter counter = new WordCounter(s);
 		sentences = counter.makeSentences();
 		this.text = s;
@@ -24,24 +24,29 @@ public class Article {
 		// by using the Sentence constructor, feeding in
 		// the Strings. This way, the code below will work.
 		// NOT EVERY PERIOD WILL SIGNIFY THE END OF A SENTENCE. WE NEED IF
-		// STATEMENTS (if it's not Mr., Dr., Mrs., etc.)
+		// STATEMENTS (if it's not Mr., Mrs., etc.)
 
 		//find best sentences for the summary
 		bestSentences = findBestSentences();
 
-		//temp print best sentences
+		//print best sentences
 		for (int i = 0; i < bestSentences.length; i++) {
 			System.out.println(bestSentences[i]);
 		}
-
+		
+		//prints the info of each sentence
+		for (int i = 0; i < bestSentences.length; i++) {
+			System.out.println(bestSentences[i].getInfo());
+		}
+		System.out.println();
 	}
 
 	private Sentence[] findBestSentences() {
-		Sentence[] top = new Sentence[numSentences];
+		Sentence[] top = new Sentence[numSentencesInSummary];
 
 		// initialize top array with blank sentences
 		for (int i = 0; i < top.length; i++) {
-			top[i] = new Sentence("");
+			top[i] = new Sentence("", null);
 		}
 
 		// get best sentences
