@@ -1,6 +1,8 @@
-
 package bestsummarydevelopment;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,113 +16,108 @@ public class Sentence {
   private int indexInArticle;
   private List<Word> words;
   private String text;
-  private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
-  private static double NOUN_WEIGHT = 2;
-  private static double PROPER_NOUN_WEIGHT = 4;
-  private static double QUOTATION_WEIGHT = 0.5;
-  
-  //haven't used this yet
-  private static double VERB_WEIGHT = 0.5;
-  
+
   //constructor, creates a sentence that is split up by spaces
-  public Sentence(String s, POSModel model) {
-	  text = s;
-	    String OK = "abcdefghijklmnopqrstuvwxyz' ";
-	    for (int i = 0; i < s.length(); i++) {
-	        boolean isOK = false;
-	        for (int j = 0; j < OK.length(); j++) {
-	            if (Character.toLowerCase(s.charAt(i)) == OK.charAt(j))
-	                isOK = true;
-	            if (isOK)
-	                break;
-	        }
-	        if (!isOK) {
-	            s = s.substring(0,i) + s.substring(i+1);
-	            i--;
-	        }
-	    }
-	  words = new ArrayList<Word>();
-	  if(model != null){
-		POSTaggerME tagger = new POSTaggerME(model);
-	    String[] temp = s.split(" ");
-	    //array of parts of speech corresponding to each word in the string
-	    String[] POS = tagger.tag(temp);
-	    for (int i = 0; i < temp.length; i++) {
-	      words.add(new Word(temp[i], POS[i]));
-	    }
-	    this.numWords = temp.length;
-	  }
+  public Sentence(String s) {
+	text = s;
+    String OK = "abcdefghijklmnopqrstuvwxyz' ";
+    for (int i = 0; i < s.length(); i++) {
+        boolean isOK = false;
+        for (int j = 0; j < OK.length(); j++) {
+            if (Character.toLowerCase(s.charAt(i)) == OK.charAt(j))
+                isOK = true;
+            if (isOK)
+                break;
+        }
+        if (!isOK) {
+            s = s.substring(0,i) + s.substring(i+1);
+            i--;
+        }
+    }
+    words = new ArrayList<Word>();
+    String[] temp = s.split(" ");
+    POSTaggerME tagger = setupPOSTagger();
+    //array of parts of speech corresponding to each word in the string
+    String[] POS = tagger.tag(temp);
+    for (int i = 0; i < temp.length; i++) {
+      words.add(new Word(temp[i], POS[i]));
+    }
+    this.numWords = temp.length;
+  }
+
+  //sets up the part of speech tagger
+  public POSTaggerME setupPOSTagger(){
+  	InputStream modelIn = null;
+  	POSModel model = null;
+  	try {
+  		
+//William: "/Users/williamadriance/eclipse/workspace/Test/src/bestsummarydevelopment/en-pos-maxent.bin"
+//Alex: "/Users/alex/BestSummary/bestsummarydevelopment/en-pos-maxent.bin"
+//Jared: "/Users/galbraithja/workspace/Test/en-pos-maxent.bin"
+//Sean: "/Users/seanrichardson/BestSummary/src/bestsummarydevelopment/en-pos-maxent.bin"
+  		
+  	  modelIn = new FileInputStream("/Users/seanrichardson/BestSummary/src/bestsummarydevelopment/en-pos-maxent.bin");
+  	  model = new POSModel(modelIn);
+  	}
+  	catch (IOException e) {
+  	  // Model loading failed, handle the error
+  	  e.printStackTrace();
+  	}
+  	finally {
+  	  if (modelIn != null) {
+  	    try {
+  	      modelIn.close();
+  	    }
+  	    catch (IOException e) {
+  	    }
+  	  }
+  	}
+  	POSTaggerME tagger = new POSTaggerME(model);
+
+  	return tagger;
   }
   
-//sets the score of the sentence
+  //sets the score of the sentence
   public boolean scoreSentence(Article article) {
-	  this.points = instancePoints();
-	  
-	  //changes the score based on the location of the sentence within the article
-	  this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
-	  if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
-		  this.points = 0;
-	  return true;
-  }
-  
-  public int instancePoints() {
-	  double count = 0;
-	    for(int i = 0;i < words.size();i++){
-	    	double temp = words.get(i).getInstances()*100;
-	    	String posTemp = words.get(i).getPartOfSpeech();
-	   
-	    	//multiplies by 2 if the word is a proper noun
-	    	if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
-	    		temp *= PROPER_NOUN_WEIGHT;
-	    	if (posTemp.equals("NN") || posTemp.equals("NNS"))
-	    		temp *= NOUN_WEIGHT;
-	    	//sets the word equal to zero if the word is a coordinating conjunction, subordinating conjunction, preposition, determiner, or adverb
-	    	else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
-	    		temp = 0;
-	    
-	      count += temp;
-	    }
-	    if(this.containsString("\""))
-	    	count *= QUOTATION_WEIGHT;
-	  return (int)count;
+    int count = 0;
+    for(int i = 0;i < words.size();i++){
+    	int temp = words.get(i).getInstances()*100;
+    	String posTemp = words.get(i).getPartOfSpeech();
+    	
+      if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
+        temp *= 2;
+      //we use substrings for the rest of the if statements to catch multiple similar parts of speech
+      else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
+    	temp = 0;
+    
+      count += temp;
+    }
+    //Can adjust this for longer/shorter sentences
+    int ratio = count;
+    //We can tweak this for better results
+    ratio /= checkBadWords() + 1;
+    
+    //changes the score based on the location of the sentence within the article
+    ratio /= (article.getLength() / (article.getLength() - this.indexInArticle));
+    
+    this.setPoints(ratio);
+    return true;
   }
     
   //checks to see if there is a "bad" word in the sentence
-	public boolean checkBadWords() {
+	public int checkBadWords() {
+	  int badWords = 0;
 	  if (words.size() >= 6) {
 		  for (int i = 0; i < 6; i++) {
-			  String sub = words.get(i).getPartOfSpeech();
-			  //checks to see if the first six words in a sentence contain a pronoun or a personal pronoun
-			  if (sub.equals("WP") || (sub.length() > 2 && (sub.equals("WP$") || sub.equals("PRP"))))
-				  return true;
+			String temp = words.get(i).getPartOfSpeech();
+		    if (temp.equals("WP") || (temp.length() > 2 && temp.equals("PRP")))
+		      badWords++;
 		  }
 	  }
-	  return false;
+	    return badWords;
 	}
-	
-	//checks to see if there is unnecessary info in the sentence
-	public boolean checkBadList() {
-		//goes through badList
-		for (int i = 0; i < words.size(); i++) {
-			for (int k = 0; k < badList.length; k++) {
-				if (words.get(i).toString().toLowerCase().equals(badList[k]))
-					return true;
-			}
-		}
-		return false;
-	}
-	//checks to see if the first word in the sentence is a conjunction
-	public boolean checkFirstWord() {
-		String sub = words.get(0).getPartOfSpeech();
-		if (sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB") || words.get(0).toString().toLowerCase().equals("read"))
-			return true;
-		return false;
-	}
-	
-	public boolean containsString(String s){
-		return this.toString().contains(s);
-	}
-	
+
+
   //getters and setters for number of words in the sentence
   public int getNumWords(){
 	  return this.numWords;
@@ -158,9 +155,6 @@ public class Sentence {
 
   //to-string method
   public String toString() {
-    return text;
-  }
-  public String getInfo() {
-	  return "Index:\t" + this.indexInArticle + "\tNumberOfWords:\t" + this.numWords + "\tPoints:\t" + this.points;
+	  return text;
   }
 }
