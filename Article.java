@@ -6,6 +6,8 @@ public class Article {
 	private int numSentencesInSummary;
 	private String text;
 	private Sentence[] bestSentences;
+	private String url;
+	private String title;
 
 	public Article(String s, int numSentences) {
 		this.numSentencesInSummary = numSentences;
@@ -28,17 +30,6 @@ public class Article {
 
 		//find best sentences for the summary
 		bestSentences = findBestSentences();
-
-		//print best sentences
-		for (int i = 0; i < bestSentences.length; i++) {
-			System.out.println(bestSentences[i]);
-		}
-		
-		//prints the info of each sentence
-		for (int i = 0; i < bestSentences.length; i++) {
-			System.out.println(bestSentences[i].getInfo());
-		}
-		System.out.println();
 	}
 
 	private Sentence[] findBestSentences() {
@@ -101,5 +92,41 @@ public class Article {
 
 	public int getLength() {
 		return sentences.length;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String printSummary() {
+		String ret = "";
+		//print best sentences
+		ret += ("---------------------------------------\n");
+		ret += ("URL:\t" + url + "\n");
+		ret += ("Title:\t" + title + "\n");
+		for (int i = 0; i < bestSentences.length; i++) {
+			ret += (bestSentences[i] + "\n");
+		}
+		return ret;
+	}
+	public String printInfo() {
+		String ret = "";
+		//prints the info of each sentence
+		for (int i = 0; i < bestSentences.length; i++) {
+			ret += (bestSentences[i].getInfo() + "\n");
+		}
+		ret += "\n";
+		return ret;
 	}
 }

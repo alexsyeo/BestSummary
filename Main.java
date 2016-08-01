@@ -2,6 +2,10 @@ package bestsummarydevelopment;
 
 import java.util.ArrayList;
 
+import org.xml.sax.SAXException;
+
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
+
 public class Main {
 
 	private static ArrayList<Article> articles = new ArrayList<>();
@@ -12,11 +16,16 @@ public class Main {
 
 	public static final int SUMMARY_SENTENCES = 5;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws BoilerpipeProcessingException, SAXException {
 		// Get top stories from Google News
 
 		//NO MORE THAN 10 ARTICLES
 		ArticleReceiver receiver1 = new ArticleReceiver(10, TOP_STORIES_URL);
 		articles.addAll(receiver1.getArticles());
+		
+		for (int i = 0; i < articles.size(); i++) {
+			System.out.println(articles.get(i).printSummary());
+			System.out.println(articles.get(i).printInfo());
+		}
 	}
 }

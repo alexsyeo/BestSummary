@@ -18,13 +18,14 @@ import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.xml.sax.SAXException;
 
 public class ArticleReceiver {
 
     private ArrayList<Article> newsArticles = new ArrayList<Article>();
     private ArrayList<String> newsLinks = new ArrayList<String>();
 
-    public ArticleReceiver(int numArticles, String link) {
+    public ArticleReceiver(int numArticles, String link) throws BoilerpipeProcessingException, SAXException {
         if (numArticles != 0) {
             receiveNewsArticles(numArticles, link);
         } else {
@@ -32,7 +33,7 @@ public class ArticleReceiver {
         }
     }
 
-    private void receiveNewsArticles(int numArticles, String urlAddress) {
+    private void receiveNewsArticles(int numArticles, String urlAddress) throws BoilerpipeProcessingException, SAXException {
         URL rssUrl = null;
         // if connected to Internet
         if (internetIsAvailable()) {
@@ -70,14 +71,26 @@ public class ArticleReceiver {
                 }
 
                 // gather articles from "section" tag of article using Jsoup
-                String article;
                 for (String newsLink : newsLinks) {
                     // get webpage
                     Document doc = Jsoup.connect(newsLink).timeout(5000).get();
                     Elements element = doc.select("p");
-                    article = element.text();
-
+                    String articleA = element.text();
+                    //Boilerpipe:
+                    final HTMLDocument htmlDoc = HTMLFetcher.fetch(new URL(newsLink));
+					final TextDocument docB = new BoilerpipeSAXInput(htmlDoc.toInputSource()).getTextDocument();
+					String articleB = CommonExtractors.ARTICLE_EXTRACTOR.getText(docB);
+					String title = docB.getTitle();
+					//Merging two versions:
+					String article = merge(articleA, articleB);
+					
+					//System.out.println(newsLink + "\n" + title + "\n\n" + article+ "\n-----------------\n\n\n\n");
+					
                     newsArticles.add(new Article(article, Main.SUMMARY_SENTENCES));
+                    
+                    Article a = newsArticles.get(newsArticles.size()-1);
+                    a.setTitle(title);
+                    a.setUrl(newsLink);
                 }
 
             } catch (IOException e) {
@@ -89,7 +102,33 @@ public class ArticleReceiver {
         }
     }
 
-    public ArrayList<Article> getArticles() {
+    private String merge(String articleA, String articleB) {
+    	int maxCount = 0;
+		int maxIndex = 0;
+		//runs through possible starting indexes of articleB
+		for (int i = 0; i < articleB.length(); i++) {
+			//counts how many characters are equal
+			int count = 0;
+			int max = articleA.length();
+			if (articleB.length()-i < max)
+				max = articleB.length()-i;
+			for (int j = 0; j < max; j++) {
+				if (articleA.charAt(j) == articleB.charAt(i+j)) {
+					count++;
+					if (count > maxCount) {
+						maxCount = count;
+						maxIndex = i;
+					}
+				}
+				else {
+					break;
+				}
+			}
+		}
+		return articleB.substring(maxIndex);
+	}
+
+	public ArrayList<Article> getArticles() {
         return newsArticles;
     }
 
