@@ -1,4 +1,5 @@
 package bestsummarydevelopment;
+import java.util.Scanner;
 
 public class Article {
 
@@ -9,6 +10,7 @@ public class Article {
 	private String url;
 	private String title;
 	private SentenceGenome weightGenome;
+	static Scanner s = new Scanner(System.in);
 
 	public Article(String s, int numSentences, SentenceGenome wG) {
 		WordCounter counter = new WordCounter(s);
@@ -131,5 +133,16 @@ public class Article {
 		}
 		ret += "\n";
 		return ret;
+	}
+	
+	//gets user input that rates the summary on a scale from 1 to 10 and returns that rating as a double
+	public double getRating() {
+		System.out.println("Please rate the summary (0-10).");
+		double rating = s.nextDouble();
+		while (rating > 10 || rating < 0) {
+			System.out.println("That is not within 0-10. Please rate the summary (0-10).");
+			rating = s.nextDouble();
+		}
+		return rating;
 	}
 }
