@@ -16,7 +16,7 @@ public class WordCounter {
     public WordCounter(String a) {
         this.article = a;
     }
-    public Sentence[] makeSentences() {
+    public Sentence[] makeSentences(SentenceGenome sg) {
     	SentenceModel model = null;
     	InputStream modelIn = null;
     	try {
@@ -49,7 +49,7 @@ public class WordCounter {
     	sentences = new Sentence[sentencesTemp.length];
     	POSModel pos = setupPOSTagger();
     	for (int i = 0; i < sentencesTemp.length; i++) {
-    		sentences[i] = new Sentence(sentencesTemp[i], pos);
+    		sentences[i] = new Sentence(sentencesTemp[i], pos, sg);
     		//I added the line of code below to set the location of each sentence in the article
     		sentences[i].setIndexInArticle(i);
     	}
