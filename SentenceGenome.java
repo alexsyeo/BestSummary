@@ -1,18 +1,20 @@
+package bestsummarydevelopment;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SentenceGenome {
-	double[] vecWeights;
+	double[] weights;
 	double fitness;
 	
 	//constructors
 	public SentenceGenome(double[] weights, double fit){
-		this.vecWeights = weights;
+		this.weights = weights;
 		this.fitness = fit;
 	}
 	
 	public SentenceGenome(double[] weights){
-		this.vecWeights = weights;
+		this.weights = weights;
 		this.fitness = -1;
 	}
 	
@@ -22,9 +24,9 @@ public class SentenceGenome {
 	
 	//switches a random number of weights between two chromosomes/organisms
 	public List<SentenceGenome> Crossover(SentenceGenome other){
-		for(int i=0;i<(int)(Math.random()*this.vecWeights.length);i++){
-			double temp = this.vecWeights[i];
-			this.vecWeights[i] = other.getWeights()[i];
+		for(int i=0;i<(int)(Math.random()*this.weights.length);i++){
+			double temp = this.weights[i];
+			this.weights[i] = other.getWeights()[i];
 			other.getWeights()[i] = temp;
 		}
 		List<SentenceGenome> ret = new ArrayList<SentenceGenome>();
@@ -43,16 +45,16 @@ public class SentenceGenome {
 		List<SentenceGenome> genomesAfterCrossover = this.Crossover(other);
 		SentenceGenome genome1 = genomesAfterCrossover.get(0);
 		SentenceGenome genome2 = genomesAfterCrossover.get(1);
-		double[] weights = new double[genome1.vecWeights.length];
+		double[] w = new double[genome1.getWeights().length];
 		//averages parents' weights
-		for (int i=0; i<genome1.vecWeights.length; i++){
-			weights[i] = 0.5 * (genome1.vecWeights[i] + genome2.getWeights()[i]);
+		for (int i=0; i<genome1.getWeights().length; i++){
+			w[i] = 0.5 * (genome1.getWeights()[i] + genome2.getWeights()[i]);
 		}
 		
 		//mutates children randomly
 		for (int i=0; i<numChildren; i++){
-			weights = weights.clone();
-			SentenceGenome temp = new SentenceGenome(weights);
+			w = w.clone();
+			SentenceGenome temp = new SentenceGenome(w);
 			temp.Mutate(mutationRate);
 			ret.add(temp);
 		}
@@ -62,10 +64,10 @@ public class SentenceGenome {
 	
 	//Increases or decreases each weight by a random amount, if a random variable is less than the mutation rate.
 	private boolean Mutate(double mutationRate){
-		for (int i = 0; i < this.vecWeights.length; i++){
+		for (int i = 0; i < this.weights.length; i++){
 			if(Math.random()<mutationRate){
-				//the maximum change that a weight can go through is +-0.1
-				this.vecWeights[i] += (Math.random()-0.5)/5;
+				//the maximum change that a weight can go through is +-0.5
+				this.weights[i] += (Math.random()-0.5);
 			}
 		}
 		return true;
@@ -73,10 +75,10 @@ public class SentenceGenome {
 	
 	//getters, setters, and toString() method
 	public void setWeights(double[] weights){
-		this.vecWeights = weights;
+		this.weights = weights;
 	}
 	public double[] getWeights(){
-		return this.vecWeights;
+		return this.weights;
 	}
 	
 	public void setFitness(double fit){
@@ -88,8 +90,8 @@ public class SentenceGenome {
 	
 	public String toString(){
 		String r = "[";
-		for(int i=0;i<this.vecWeights.length;i++){
-			r += this.vecWeights[i] + ", ";
+		for(int i=0;i<this.weights.length;i++){
+			r += this.weights[i] + ", ";
 		}
 		r = r.substring(0,r.length()-2);
 		r += "]";

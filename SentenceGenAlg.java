@@ -61,7 +61,7 @@ public class SentenceGenAlg {
 	public void Update(){
 		List<SentenceGenome> parents = this.GrabNBest(2);
 		//System.out.println(parents);
-		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), 10, 0.8);
+		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), 10, 0.2);
 		this.population = children;
 	}
 	
