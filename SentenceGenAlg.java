@@ -1,9 +1,10 @@
+package bestsummarydevelopment;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class SentenceGenAlg {
-	private List<SentenceGenome> Pop;
+	private List<SentenceGenome> population;
 	
 	private int popSize;
 	private int chromosomeLength;
@@ -21,7 +22,7 @@ public class SentenceGenAlg {
 	private int generation;
 	
 	public SentenceGenAlg(List<SentenceGenome> organisms){
-		this.Pop = organisms;
+		this.population = organisms;
 		this.popSize = organisms.size();
 	}
 	
@@ -35,7 +36,7 @@ public class SentenceGenAlg {
 		}
 		
 		for (int i = 0; i < bestGenomes.length; i++) {
-			for (SentenceGenome sG : this.Pop) {
+			for (SentenceGenome sG : this.population) {
 				if (sG.getFitness() > bestGenomes[i].getFitness()) {
 					boolean isGood = true;
 					for (int j = 0; j < bestGenomes.length; j++) {
@@ -61,11 +62,11 @@ public class SentenceGenAlg {
 		List<SentenceGenome> parents = this.GrabNBest(2);
 		//System.out.println(parents);
 		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), 10, 0.8);
-		this.Pop = children;
+		this.population = children;
 	}
 	
 	public List<SentenceGenome> getPop(){
-		return this.Pop;
+		return this.population;
 	}
 
 	//private void CalculateBestWorstAvTot();
