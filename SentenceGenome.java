@@ -23,6 +23,7 @@ public class SentenceGenome {
 	}
 	
 	//switches a random number of weights between two chromosomes/organisms
+	//currently unused
 	public List<SentenceGenome> Crossover(SentenceGenome other){
 		for(int i=0;i<(int)(Math.random()*this.weights.length);i++){
 			double temp = this.weights[i];
@@ -42,14 +43,16 @@ public class SentenceGenome {
 	public List<SentenceGenome> haveChildren(SentenceGenome other, int numChildren, double mutationRate){
 		List<SentenceGenome> ret = new ArrayList<SentenceGenome>();
 		//crossover
-		List<SentenceGenome> genomesAfterCrossover = this.Crossover(other);
-		SentenceGenome genome1 = genomesAfterCrossover.get(0);
-		SentenceGenome genome2 = genomesAfterCrossover.get(1);
+		//List<SentenceGenome> genomesAfterCrossover = this.Crossover(other);
+		SentenceGenome genome1 = this;
+		SentenceGenome genome2 = other;
 		double[] w = new double[genome1.getWeights().length];
 		//averages parents' weights
 		for (int i=0; i<genome1.getWeights().length; i++){
 			w[i] = 0.5 * (genome1.getWeights()[i] + genome2.getWeights()[i]);
 		}
+		
+		
 		
 		//mutates children randomly
 		for (int i=0; i<numChildren; i++){

@@ -10,11 +10,11 @@ import java.io.InputStream;
 
 
 public class WordCounter {
-    String article;
-    Sentence[] sentences;
+    private String article;
+    private Sentence[] sentences;
 
     public WordCounter(String a) {
-        article = a;
+        this.article = a;
     }
     public Sentence[] makeSentences() {
     	SentenceModel model = null;

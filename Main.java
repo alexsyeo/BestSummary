@@ -1,6 +1,7 @@
 package bestsummarydevelopment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.xml.sax.SAXException;
 
@@ -23,9 +24,15 @@ public class Main {
 		ArticleReceiver receiver1 = new ArticleReceiver(10, TOP_STORIES_URL);
 		articles.addAll(receiver1.getArticles());
 		
-		for (int i = 0; i < articles.size(); i++) {
-			System.out.println(articles.get(i).printSummary());
-			System.out.println(articles.get(i).printInfo());
+		List<SentenceGenome> sg = new ArrayList<SentenceGenome>();
+		sg.add(new SentenceGenome(new double[]{0.9, 0.7, 0.4, 0.2}));
+		sg.add(new SentenceGenome(new double[]{0.84, 0.77, 0.4, 0.3}));
+		
+		SentenceGenAlg Algorithm = new SentenceGenAlg(sg, 5);
+		
+		
+		for (int i=0; i<articles.size();i++){
+			System.out.println(articles.get(i).getSummary());
 		}
 	}
 }

@@ -8,13 +8,16 @@ public class Article {
 	private Sentence[] bestSentences;
 	private String url;
 	private String title;
+	private SentenceGenome weightGenome;
 
-	public Article(String s, int numSentences) {
-		this.numSentencesInSummary = numSentences;
+	public Article(String s, int numSentences, SentenceGenome wG) {
 		WordCounter counter = new WordCounter(s);
-		sentences = counter.makeSentences();
+		
+		this.numSentencesInSummary = numSentences;
+		this.weightGenome = wG;
+		this.sentences = counter.makeSentences(this.weightGenome);
 		this.text = s;
-
+		
 		for (int i = 0; i < sentences.length; i++) {
 			sentences[i].scoreSentence(this);
 		}
@@ -37,7 +40,7 @@ public class Article {
 
 		// initialize top array with blank sentences
 		for (int i = 0; i < top.length; i++) {
-			top[i] = new Sentence("", null);
+			top[i] = new Sentence("", null, null);
 		}
 
 		// get best sentences
@@ -109,7 +112,7 @@ public class Article {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String printSummary() {
+	public String getSummary() {
 		String ret = "";
 		//print best sentences
 		ret += ("---------------------------------------\n");

@@ -16,14 +16,16 @@ public class SentenceGenAlg {
 	
 	private int fittestGenome;
 	
-	private double mutationRate;
+	private double mutationRate = 0.2;
+	private int numChildrenPerGeneration;
 	private double crossoverRate = 0.7; //just a temporary value, works okay
 	
 	private int generation;
 	
-	public SentenceGenAlg(List<SentenceGenome> organisms){
+	public SentenceGenAlg(List<SentenceGenome> organisms, int num){
 		this.population = organisms;
 		this.popSize = organisms.size();
+		this.numChildrenPerGeneration = num;
 	}
 	
 	//private SentenceGenome GetChromoRoulette(){}
@@ -60,8 +62,7 @@ public class SentenceGenAlg {
 	
 	public void Update(){
 		List<SentenceGenome> parents = this.GrabNBest(2);
-		//System.out.println(parents);
-		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), 10, 0.2);
+		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), this.numChildrenPerGeneration, this.mutationRate);
 		this.population = children;
 	}
 	

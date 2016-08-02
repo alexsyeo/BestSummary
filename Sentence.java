@@ -16,11 +16,12 @@ public class Sentence {
   private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
   
   //list of different weights. NOUN, PROPER NOUN, PRESENT TENSE VERB, OTHER VERBS, ADJECTIVE, QUOTATION
-  private static double[] weightList = {2.0, 4.0, 0.5, 1.0, 1.0, 0.5};
+  private double[] weightList;
   
   
   //constructor, creates a sentence that is split up by spaces
-  public Sentence(String s, POSModel model) {
+  public Sentence(String s, POSModel model, SentenceGenome sg) {
+	  this.weightList = sg.getWeights();
 	  text = s;
 	    String OK = "abcdefghijklmnopqrstuvwxyz' ";
 	    for (int i = 0; i < s.length(); i++) {
@@ -70,22 +71,22 @@ public class Sentence {
 	    	
 	    	//nouns
 	    	if (posTemp.equals("NN") || posTemp.equals("NNS"))
-	    		temp *= weightList[0];
+	    		temp *= this.weightList[0];
 	    	//proper nouns
 	    	if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
-	    		temp *= weightList[1];
+	    		temp *= this.weightList[1];
 	    	//present tense verbs
 	    	if (posTemp.equals("VBP") || posTemp.equals("VBZ"))
-	    		temp *= weightList[2];
+	    		temp *= this.weightList[2];
 	    	//other types of verbs
 	    	if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN"))
-	    		temp *= weightList[3];
+	    		temp *= this.weightList[3];
 	    	//adjectives
 	    	if (posTemp.equals("JJ") || posTemp.equals("JJR") || posTemp.equals("JJS"))
-	    		temp *= weightList[4];
+	    		temp *= this.weightList[4];
 	    	//quotations
 	    	if (this.containsString("\""))
-	    		count *= weightList[5];
+	    		count *= this.weightList[5];
 	    	
 	    	//sets the word equal to zero if the word is a coordinating conjunction, subordinating conjunction, preposition, determiner, or adverb
 	    	else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
