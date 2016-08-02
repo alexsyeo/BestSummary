@@ -24,7 +24,7 @@ public class Main {
 		articles.addAll(receiver1.getArticles());
 		
 		for (int i = 0; i < articles.size(); i++) {
-			System.out.println(articles.get(i).printSummary());
+			System.out.println(articles.get(i).getSummary());
 			System.out.println(articles.get(i).printInfo());
 		}
 	}
