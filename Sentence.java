@@ -1,4 +1,3 @@
-
 package bestsummarydevelopment;
 
 import java.util.ArrayList;
@@ -15,12 +14,10 @@ public class Sentence {
   private List<Word> words;
   private String text;
   private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
-  private static double NOUN_WEIGHT = 2;
-  private static double PROPER_NOUN_WEIGHT = 4;
-  private static double QUOTATION_WEIGHT = 0.5;
   
-  //haven't used this yet
-  private static double VERB_WEIGHT = 0.5;
+  //list of different weights. NOUN, PROPER NOUN, PRESENT TENSE VERB, OTHER VERBS, ADJECTIVE, QUOTATION
+  private static double[] weightList = {2.0, 4.0, 0.5, 1.0, 1.0, 0.5};
+  
   
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s, POSModel model) {
@@ -69,19 +66,33 @@ public class Sentence {
 	    	double temp = words.get(i).getInstances()*100;
 	    	String posTemp = words.get(i).getPartOfSpeech();
 	   
-	    	//multiplies by 2 if the word is a proper noun
-	    	if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
-	    		temp *= PROPER_NOUN_WEIGHT;
+	    	//multiplies by certain weights depending on the part of speech (accesses the weightList array)
+	    	
+	    	//nouns
 	    	if (posTemp.equals("NN") || posTemp.equals("NNS"))
-	    		temp *= NOUN_WEIGHT;
+	    		temp *= weightList[0];
+	    	//proper nouns
+	    	if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
+	    		temp *= weightList[1];
+	    	//present tense verbs
+	    	if (posTemp.equals("VBP") || posTemp.equals("VBZ"))
+	    		temp *= weightList[2];
+	    	//other types of verbs
+	    	if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN"))
+	    		temp *= weightList[3];
+	    	//adjectives
+	    	if (posTemp.equals("JJ") || posTemp.equals("JJR") || posTemp.equals("JJS"))
+	    		temp *= weightList[4];
+	    	//quotations
+	    	if (this.containsString("\""))
+	    		count *= weightList[5];
+	    	
 	    	//sets the word equal to zero if the word is a coordinating conjunction, subordinating conjunction, preposition, determiner, or adverb
 	    	else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
 	    		temp = 0;
 	    
 	      count += temp;
 	    }
-	    if(this.containsString("\""))
-	    	count *= QUOTATION_WEIGHT;
 	  return (int)count;
   }
     
