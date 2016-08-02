@@ -30,9 +30,17 @@ public class Main {
 		
 		SentenceGenAlg Algorithm = new SentenceGenAlg(sg, 5);
 		
+		int indexInGeneration = 0;
 		
 		for (int i=0; i<articles.size();i++){
+			if(indexInGeneration == Algorithm.getPopSize()){
+				Algorithm.Update();
+				indexInGeneration = 0;
+			}
 			System.out.println(articles.get(i).getSummary());
+			
+			indexInGeneration++;
+			
 		}
 	}
 }
