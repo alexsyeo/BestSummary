@@ -24,6 +24,7 @@ public class Main {
 	public static final String BUSINESS_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=b&output=rss";
 	static Scanner s = new Scanner(System.in);
 	private static int summarySentences;
+	private static int numArticles;
 
 
 	public static void main(String[] args) {
@@ -69,9 +70,10 @@ public class Main {
 		ArticleReceiver receiver1 = null;
 		
 		try {
+			promptNumberOfArticles();
 			promptNumberOfSummarySentences();
 			//creates article receiver, which creates the articles
-			receiver1 = new ArticleReceiver(10, TOP_STORIES_URL, Algorithm);
+			receiver1 = new ArticleReceiver(numArticles, TOP_STORIES_URL, Algorithm);
 		} catch (BoilerpipeProcessingException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
@@ -139,6 +141,16 @@ public class Main {
 			}
 			setSummarySentences(response);
 		}
+		
+		public static void promptNumberOfArticles() {
+			System.out.println("How many articles do you want to summarize?");
+			int k = s.nextInt();
+			while (k < 1 || k > 10) {
+				System.out.println("Please enter a number from 0 to 10.");
+				k = s.nextInt();
+			}
+			numArticles = k;
+		}
 
 		public static int getSummarySentences() {
 			return summarySentences;
@@ -147,4 +159,5 @@ public class Main {
 		public static void setSummarySentences(int summarySentences) {
 			Main.summarySentences = summarySentences;
 		}
+		
 }
