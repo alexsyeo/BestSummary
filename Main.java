@@ -1,5 +1,12 @@
 package bestsummarydevelopment;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -18,25 +25,43 @@ public class Main {
 	static Scanner s = new Scanner(System.in);
 	private static int summarySentences;
 
+
 	public static void main(String[] args) {
-		
-	
-		
-		
 		List<SentenceGenome> sg = new ArrayList<SentenceGenome>();
-		sg.add(new SentenceGenome(new double[]{0.9, 0.7, 0.4, 0.2, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.84, 0.77, 0.4, 0.3, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.9, 0.7, 0.4, 0.2, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.84, 0.77, 0.4, 0.3, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.9, 0.7, 0.4, 0.2, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.84, 0.77, 0.4, 0.3, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.9, 0.7, 0.4, 0.2, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.84, 0.77, 0.4, 0.3, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.9, 0.7, 0.4, 0.2, 0.5, 0.5}));
-		sg.add(new SentenceGenome(new double[]{0.84, 0.77, 0.4, 0.3, 0.5, 0.5}));
+		
+		//gets info from file
+		BufferedReader reader = null;
+		try {
+			//creates file reader
+			reader = new BufferedReader(new FileReader(new File("data.txt")));
+			
+			//stores all the text info in an ArrayList
+			List<String> initialPopAsString = new ArrayList<String>();
+			while(reader.readLine() != null){
+				initialPopAsString.add(reader.readLine());
+			}
+			
+			//adds the info of the file to the genetic algorithm
+			for(int i=0;i<initialPopAsString.size();i++){
+				String[] temp1 = initialPopAsString.get(i).split(" ");
+				double[] temp2 = new double[temp1.length];
+				for(int j=0; j<temp2.length;j++){
+					temp2[j] = Double.parseDouble(temp1[i]);
+				}
+				//currently there is an unused value in temp2, but it doesn't cause an error
+				sg.add(new SentenceGenome(temp2.clone(), temp2.clone()[temp2.length-1]));
+			}
+			
+			reader.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
 		
 		
-		SentenceGenAlg Algorithm = new SentenceGenAlg(sg, 5);
+		
+		SentenceGenAlg Algorithm = new SentenceGenAlg(sg, 10);
 		
 		// Get top stories from Google News
 
@@ -53,10 +78,10 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-	
+		
 		articles.addAll(receiver1.getArticles());
 		
-		
+
 		/*
 		//goes through all the articles to find the lowest number of sentences in an article
 		//NOT IMPLEMENTED NOW
@@ -72,23 +97,43 @@ public class Main {
 		} */
 		
 		
-	
-
-		
 		for (int i=0; i<articles.size();i++){
 			System.out.println(articles.get(i).getSummary());
-			System.out.println(articles.get(i).printInfo());
 			articles.get(i).setFitnessOfGenome();
 		}
+		
+		
+		//write info to file
+		BufferedWriter writer = null;
+		try{
+			writer = new BufferedWriter(new FileWriter(new File("data.txt")));
+			
+			String toWrite = "";
+			List<SentenceGenome> infoToWrite = Algorithm.getPop();
+			for(int i=0;i<infoToWrite.size();i++){
+				for(int j=0;j<infoToWrite.get(i).getWeights().length; j++){
+					toWrite += infoToWrite.get(i).getWeights()[j] + " ";
+				}
+				toWrite += infoToWrite.get(i).getFitness() + "\n";
+			}
+			
+			writer.write(toWrite);
+			
+			writer.close();
+			
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
 	}
-	
 	//gets user input that determines the amount of sentences in the summary
 		public static void promptNumberOfSummarySentences() {
 			System.out.println("How many sentences do you want in the summary?");
 			int response = s.nextInt();
 			
 			//add something that checks the number of sentences in the article
-			while (response < 1 || response > 7) {
+			while (response < 1 || response > 7) { //currently there will be an error if article is less than 7 sentences
 				System.out.println("That is not a valid number. Please enter the number of sentences you want in the summary.");
 				response = s.nextInt();
 			}
@@ -102,6 +147,4 @@ public class Main {
 		public static void setSummarySentences(int summarySentences) {
 			Main.summarySentences = summarySentences;
 		}
-
-
 }

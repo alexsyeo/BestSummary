@@ -107,7 +107,6 @@ public class ArticleReceiver {
 		else
 			article = merge(articleA, articleB);
 		//edited below
-		
 		newsArticles.add(new Article(article, Main.getSummarySentences(), this.weightSetter.getNext()));
         Article a = newsArticles.get(newsArticles.size()-1);
         a.setTitle(title);
