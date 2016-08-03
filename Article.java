@@ -95,7 +95,7 @@ public class Article {
 		return text;
 	}
 
-	public int getLength() {
+	public int getNumberOfSentences() {
 		return sentences.length;
 	}
 
@@ -146,6 +146,9 @@ public class Article {
 		this.weightGenome.setFitness(rating);
 		return rating;
 	}
+	
+	
+	
 	
 	public boolean setWeightGenome(SentenceGenome sG){
 		this.weightGenome = sG;
