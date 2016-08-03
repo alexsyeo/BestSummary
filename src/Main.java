@@ -33,7 +33,7 @@ public class Main {
 		BufferedReader reader = null;
 		try {
 			//creates file reader
-			reader = new BufferedReader(new FileReader(new File("data.txt")));
+			reader = new BufferedReader(new FileReader(new File("data/data.txt")));
 			
 			//stores all the text info in an ArrayList
 			List<String> initialPopAsString = new ArrayList<String>();
@@ -106,7 +106,7 @@ public class Main {
 		//write info to file
 		BufferedWriter writer = null;
 		try{
-			writer = new BufferedWriter(new FileWriter(new File("data.txt")));
+			writer = new BufferedWriter(new FileWriter(new File("data/data.txt")));
 			
 			String toWrite = "";
 			List<SentenceGenome> infoToWrite = Algorithm.getPop();
