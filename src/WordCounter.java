@@ -26,7 +26,7 @@ public class WordCounter {
     		//Sean:
     		//Jared:
 
-    	  modelIn = new FileInputStream("en-sent.bin");
+    	  modelIn = new FileInputStream("data/en-sent.bin");
     	  model = new SentenceModel(modelIn);
     	}
     	catch (IOException e) {
@@ -63,7 +63,7 @@ public class WordCounter {
     	InputStream modelIn = null;
     	POSModel model = null;
     	try {
-    	  modelIn = new FileInputStream("en-pos-maxent.bin");
+    	  modelIn = new FileInputStream("data/en-pos-maxent.bin");
     	  model = new POSModel(modelIn);
     	}
     	catch (IOException e) {

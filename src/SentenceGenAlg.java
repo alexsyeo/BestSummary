@@ -40,14 +40,10 @@ public class SentenceGenAlg {
 	
 		for (int i = 0; i < bestGenomes.length; i++) {
 			for (SentenceGenome sG : this.population) {
-				System.out.println("sentencegenome : " + sG.getFitness());
-				System.out.println(bestGenomes[i].getFitness());
 				if (sG.getFitness() > bestGenomes[i].getFitness()) {
 					boolean isGood = true;
-					//System.out.println("bestgenomeslength: " + bestGenomes.length);
+		
 					for (int j = 0; j < bestGenomes.length; j++) {
-						System.out.println("TESTING");
-						//System.out.println("bestGenomes[j]: " + bestGenomes[j]);
 						if (bestGenomes[j].equals(sG))
 							isGood = false;
 					}
