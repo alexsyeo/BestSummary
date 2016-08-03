@@ -21,6 +21,7 @@ public class SentenceGenAlg {
 	private double crossoverRate = 0.7; //just a temporary value, works okay
 	
 	private int generation;
+	private int currentIndex = 0;
 	
 	public SentenceGenAlg(List<SentenceGenome> organisms, int num){
 		this.population = organisms;
@@ -36,12 +37,17 @@ public class SentenceGenAlg {
 		for (int q=0; q<bestGenomes.length; q++) {
 			bestGenomes[q] = new SentenceGenome(null);
 		}
-		
+	
 		for (int i = 0; i < bestGenomes.length; i++) {
 			for (SentenceGenome sG : this.population) {
+				System.out.println("sentencegenome : " + sG.getFitness());
+				System.out.println(bestGenomes[i].getFitness());
 				if (sG.getFitness() > bestGenomes[i].getFitness()) {
 					boolean isGood = true;
+					//System.out.println("bestgenomeslength: " + bestGenomes.length);
 					for (int j = 0; j < bestGenomes.length; j++) {
+						System.out.println("TESTING");
+						//System.out.println("bestGenomes[j]: " + bestGenomes[j]);
 						if (bestGenomes[j].equals(sG))
 							isGood = false;
 					}
@@ -52,6 +58,7 @@ public class SentenceGenAlg {
 			}
 		}
 		
+		
 		List<SentenceGenome> ret = new ArrayList<SentenceGenome>();
 		for(int index=0;index<bestGenomes.length;index++){
 			ret.add(bestGenomes[index]);
@@ -60,14 +67,29 @@ public class SentenceGenAlg {
 		return ret;
 	}
 	
+	public SentenceGenome getNext(){
+		if(this.currentIndex == this.popSize){
+			this.Update();
+			this.currentIndex = 0;
+		}
+		this.currentIndex++;
+		return this.population.get(currentIndex-1);
+	}
+	
 	public void Update(){
 		List<SentenceGenome> parents = this.GrabNBest(2);
 		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), this.numChildrenPerGeneration, this.mutationRate);
 		this.population = children;
+		this.popSize = children.size();
+		
 	}
 	
 	public List<SentenceGenome> getPop(){
 		return this.population;
+	}
+	
+	public int getPopSize(){
+		return this.popSize;
 	}
 
 	//private void CalculateBestWorstAvTot();

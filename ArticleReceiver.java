@@ -24,8 +24,14 @@ public class ArticleReceiver {
 
     private ArrayList<Article> newsArticles = new ArrayList<Article>();
     private ArrayList<String> newsLinks = new ArrayList<String>();
+    private SentenceGenAlg weightSetter;
+    //added attribute
 
-    public ArticleReceiver(int numArticles, String link) throws BoilerpipeProcessingException, SAXException {
+
+    public ArticleReceiver() {}
+    //change constructor
+    public ArticleReceiver(int numArticles, String link, SentenceGenAlg sg) throws BoilerpipeProcessingException, SAXException {
+    	this.weightSetter = sg;
         if (numArticles != 0) {
             receiveNewsArticles(numArticles, link);
         } else {
@@ -72,25 +78,7 @@ public class ArticleReceiver {
 
                 // gather articles from "section" tag of article using Jsoup
                 for (String newsLink : newsLinks) {
-                    // get webpage
-                    Document doc = Jsoup.connect(newsLink).timeout(5000).get();
-                    Elements element = doc.select("p");
-                    String articleA = element.text();
-                    //Boilerpipe:
-                    final HTMLDocument htmlDoc = HTMLFetcher.fetch(new URL(newsLink));
-					final TextDocument docB = new BoilerpipeSAXInput(htmlDoc.toInputSource()).getTextDocument();
-					String articleB = CommonExtractors.ARTICLE_EXTRACTOR.getText(docB);
-					String title = docB.getTitle();
-					//Merging two versions:
-					String article = merge(articleA, articleB);
-					
-					//System.out.println(newsLink + "\n" + title + "\n\n" + article+ "\n-----------------\n\n\n\n");
-					
-                    newsArticles.add(new Article(article, Main.SUMMARY_SENTENCES));
-                    
-                    Article a = newsArticles.get(newsArticles.size()-1);
-                    a.setTitle(title);
-                    a.setUrl(newsLink);
+                	gatherArticles(newsLink);
                 }
 
             } catch (IOException e) {
@@ -102,7 +90,145 @@ public class ArticleReceiver {
         }
     }
 
-    private String merge(String articleA, String articleB) {
+    public boolean gatherArticles(String newsLink) throws IOException, BoilerpipeProcessingException, SAXException {
+    //Jsoup:
+        Document doc = Jsoup.connect(newsLink).timeout(5000).get();
+        Elements element = doc.select("p");
+        String articleA = element.text();
+    //Boilerpipe:
+        final HTMLDocument htmlDoc = HTMLFetcher.fetch(new URL(newsLink));
+		final TextDocument docB = new BoilerpipeSAXInput(htmlDoc.toInputSource()).getTextDocument();
+		String articleB = CommonExtractors.ARTICLE_EXTRACTOR.getText(docB);
+		String title = docB.getTitle();
+	//Merging two versions:
+		String article;
+		if (isNYT(newsLink))
+			article = mergeNYT(articleA);
+		else
+			article = merge(articleA, articleB);
+		//edited below
+		newsArticles.add(new Article(article, Main.SUMMARY_SENTENCES, this.weightSetter.getNext()));
+        Article a = newsArticles.get(newsArticles.size()-1);
+        a.setTitle(title);
+        a.setUrl(newsLink);
+		
+        //Test Stuff:
+        /*System.out.println("A:\n" + articleA + "\n\n");
+        System.out.println("B:\n" + articleB + "\n\n");
+        System.out.println(newsLink + "\n" + title + "\n\n" + article+ "\n-----------------\n\n\n\n");*/
+		return true;
+		
+		
+        //newsArticles.add(new Article(article, Main.SUMMARY_SENTENCES));
+        
+        //Article a = newsArticles.get(newsArticles.size()-1);
+        //a.setTitle(title);
+        //a.setUrl(newsLink);
+    }
+    private String mergeNYT(String articleA) {
+    	int charCount = 150;
+    	//Dash thing:
+    	boolean dashed = false;
+		int index = 0; 
+		for (int i = 0; i < charCount; i++) {
+			if (articleA.charAt(i) == '—') {
+				index = i;
+				articleA = articleA.substring(index+2);
+				dashed = true;
+				break;
+			}
+		}
+    	if (!dashed) {
+    		//Removing ads:
+        	String bad1 = "Advertisement Advertisement ";
+    		if (articleA.length() >= bad1.length() && articleA.substring(0,bad1.length()).equals(bad1))
+    			articleA = articleA.substring(bad1.length());
+    		//Removing authors/date:
+    		String letters = "abcdefghijklmnopqrstuvwxyz";
+    		index = 0;
+    		int count = 0;
+    		for (int i = 0; i < charCount; i++) {
+    			boolean isCapital = articleA.charAt(i) == ' ';
+    			if (!isCapital) {
+    				boolean isLetter = false;
+        			for (int j = 0; j < letters.length(); j++) {
+        				if (Character.toLowerCase(articleA.charAt(i)) == letters.charAt(j))
+        					isLetter = true;
+        			}
+        			if (isLetter)
+        				isCapital = Character.toLowerCase(articleA.charAt(i)) != articleA.charAt(i);
+    			}
+    			if (isCapital) {
+    				count++;
+    				if (count > 8 /*Change this var*/)
+    					index = i;
+    			}
+    			if (!isCapital)
+    				count = 0;
+    		}
+    		if (index != 0) {
+    			for (int i = index; i < articleA.length(); i++) {
+    				boolean isLetter1 = false;
+    				boolean isLetter2 = false;
+    				for (int j = 0; j < letters.length(); j++) {
+    					if (Character.toLowerCase(articleA.charAt(i)) == letters.charAt(j))
+    						isLetter1 = true;
+    					if (Character.toLowerCase(articleA.charAt(i+1)) == letters.charAt(j))
+    						isLetter2 = true;
+    				}
+    				if ((isLetter1 && isLetter2) && (Character.toLowerCase(articleA.charAt(i)) != articleA.charAt(i) && Character.toLowerCase(articleA.charAt(i+1)) == articleA.charAt(i+1))) {
+    					articleA = articleA.substring(i);
+    					break;
+    				}
+    					
+    			}
+    		}
+    	}
+    	/*
+		//Removing authors:
+		if (articleA.substring(0,2).equals("By")) {
+			index = 0;
+			for (int i = 0; i < articleA.length(); i++) {
+				if (articleA.charAt(i) == '.') {
+					index = i;
+					break;
+				}
+			}
+			articleA = articleA.substring(index+2);
+		}
+		//Removing date:
+		String letters = "abcdefghijklmnopqrstuvwxyz";
+		index = 0;
+		for (int i = 0; i < articleA.length(); i++) {
+			boolean isLetter = false;
+			for (int j = 0; j < letters.length(); j++) {
+				if (letters.charAt(j) == Character.toLowerCase((articleA.charAt(i)))) {
+					isLetter = true;
+					break;
+				}
+			}
+			if (isLetter) {
+				articleA = articleA.substring(index);
+				break;
+			}
+			else
+				index++;
+		}
+		//removing end:
+		String bad2 = " See More » Go to Home Page »";
+		if (articleA.length() >= bad2.length() && articleA.substring(articleA.length()-bad2.length(),articleA.length()).equals(bad2))
+			articleA = articleA.substring(0, articleA.length()-bad2.length());
+		String endPhrase = " Find out what you need to know about the 2016 presidential race today, and get politics news updates via Facebook, Twitter and the First Draft newsletter.";
+		*/
+		return articleA;
+	}
+
+	public boolean isNYT(String newsLink) {
+		String url = "http://www.nytimes.com";
+		return (newsLink.length() >= url.length() && newsLink.substring(0, url.length()).equals(url));
+	}
+
+	private String merge(String articleA, String articleB) {
     	int maxCount = 0;
 		int maxIndex = 0;
 		//runs through possible starting indexes of articleB
@@ -127,6 +253,10 @@ public class ArticleReceiver {
 		}
 		return articleB.substring(maxIndex);
 	}
+    private String removeJunk(String article) {
+    	
+    	return null;
+    }
 
 	public ArrayList<Article> getArticles() {
         return newsArticles;

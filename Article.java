@@ -12,12 +12,12 @@ public class Article {
 	private SentenceGenome weightGenome;
 	static Scanner s = new Scanner(System.in);
 
-	public Article(String s, int numSentences, SentenceGenome wG) {
+	public Article(String s, int numSentences, SentenceGenome sG) {
 		WordCounter counter = new WordCounter(s);
 		
 		this.numSentencesInSummary = numSentences;
-		this.weightGenome = wG;
-		this.sentences = counter.makeSentences(this.weightGenome);
+		this.weightGenome = sG;
+		this.sentences = counter.makeSentences(sG);
 		this.text = s;
 		
 		for (int i = 0; i < sentences.length; i++) {
@@ -145,5 +145,10 @@ public class Article {
 		}
 		this.weightGenome.setFitness(rating);
 		return rating;
+	}
+	
+	public boolean setWeightGenome(SentenceGenome sG){
+		this.weightGenome = sG;
+		return true;
 	}
 }

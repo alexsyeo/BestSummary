@@ -21,7 +21,10 @@ public class Sentence {
   
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s, POSModel model, SentenceGenome sg) {
-	  this.weightList = sg.getWeights();
+	  if(sg != null)
+		  this.weightList = sg.getWeights();
+	  else
+		  this.weightList = null;
 	  text = s;
 	    String OK = "abcdefghijklmnopqrstuvwxyz' ";
 	    for (int i = 0; i < s.length(); i++) {
@@ -52,12 +55,14 @@ public class Sentence {
   
 //sets the score of the sentence
   public boolean scoreSentence(Article article) {
-	  this.points = instancePoints();
+	  if(this.weightList != null){
+		  this.points = instancePoints();
 	  
-	  //changes the score based on the location of the sentence within the article
-	  this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
-	  if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
-		  this.points = 0;
+		  //changes the score based on the location of the sentence within the article
+		  this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
+		  if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
+			  this.points = 0;
+	  }
 	  return true;
   }
   
