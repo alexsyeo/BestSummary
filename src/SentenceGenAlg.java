@@ -42,7 +42,6 @@ public class SentenceGenAlg {
 			for (SentenceGenome sG : this.population) {
 				if (sG.getFitness() > bestGenomes[i].getFitness()) {
 					boolean isGood = true;
-		
 					for (int j = 0; j < bestGenomes.length; j++) {
 						if (bestGenomes[j].equals(sG))
 							isGood = false;

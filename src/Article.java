@@ -21,9 +21,10 @@ public class Article {
 		this.text = s;
 		
 		for (int i = 0; i < sentences.length; i++) {
+			try{
 			sentences[i].scoreSentence(this);
+			} catch(Exception e) {}
 		}
-
 		// Splits the large string into sentences by punctuation (|\\ is an "or"
 		// operator)
 
@@ -95,7 +96,7 @@ public class Article {
 		return text;
 	}
 
-	public int getNumberOfSentences() {
+	public int getLength() {
 		return sentences.length;
 	}
 
