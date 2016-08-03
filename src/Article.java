@@ -1,6 +1,8 @@
 package bestsummarydevelopment;
 import java.util.Scanner;
 
+import java.util.Scanner;
+
 public class Article {
 
 	private Sentence[] sentences;
@@ -9,7 +11,10 @@ public class Article {
 	private Sentence[] bestSentences;
 	private String url;
 	private String title;
+<<<<<<< HEAD:src/Article.java
 	private SentenceGenome weightGenome;
+=======
+>>>>>>> development:Article.java
 	static Scanner s = new Scanner(System.in);
 
 	public Article(String s, int numSentences, SentenceGenome sG) {
@@ -137,13 +142,18 @@ public class Article {
 	}
 	
 	//gets user input that rates the summary on a scale from 1 to 10 and returns that rating as a double
+<<<<<<< HEAD:src/Article.java
 	public double setFitnessOfGenome() {
+=======
+	public double getRating() {
+>>>>>>> development:Article.java
 		System.out.println("Please rate the summary (0-10).");
 		double rating = s.nextDouble();
 		while (rating > 10 || rating < 0) {
 			System.out.println("That is not within 0-10. Please rate the summary (0-10).");
 			rating = s.nextDouble();
 		}
+<<<<<<< HEAD:src/Article.java
 		this.weightGenome.setFitness(rating);
 		return rating;
 	}
@@ -152,4 +162,9 @@ public class Article {
 		this.weightGenome = sG;
 		return true;
 	}
+=======
+		return rating;
+	}
+	
+>>>>>>> development:Article.java
 }
