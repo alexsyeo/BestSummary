@@ -31,13 +31,14 @@ public class SentenceGenAlg {
 	
 	//private SentenceGenome GetChromoRoulette(){}
 
+	//gets the 2 best genomes to be the parents for the next generation
 	private List<SentenceGenome> GrabNBest(int NBest){
 		SentenceGenome[] bestGenomes = new SentenceGenome[NBest];
 		
 		for (int q=0; q<bestGenomes.length; q++) {
 			bestGenomes[q] = new SentenceGenome(null);
 		}
-	
+		//this is the algorithm
 		for (int i = 0; i < bestGenomes.length; i++) {
 			for (SentenceGenome sG : this.population) {
 				if (sG.getFitness() > bestGenomes[i].getFitness()) {
@@ -62,8 +63,10 @@ public class SentenceGenAlg {
 		return ret;
 	}
 	
+	//gets the next genome in the population; if there are no more genomes left it runs the "update" method which
+	//creates the next generation.
 	public SentenceGenome getNext(){
-		if(this.currentIndex == this.popSize - 1){
+		if(this.currentIndex == this.popSize - 2){
 			this.Update();
 			this.currentIndex = 0;
 		}
@@ -71,6 +74,7 @@ public class SentenceGenAlg {
 		return this.population.get(currentIndex-1);
 	}
 	
+	//gets the best 2 genomes out of the current population and creates then next generation from them
 	public void Update(){
 		List<SentenceGenome> parents = this.GrabNBest(2);
 		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), this.numChildrenPerGeneration, this.mutationRate);
@@ -78,6 +82,7 @@ public class SentenceGenAlg {
 		this.popSize = children.size();
 	}
 	
+	//getters, setters
 	public List<SentenceGenome> getPop(){
 		return this.population;
 	}
