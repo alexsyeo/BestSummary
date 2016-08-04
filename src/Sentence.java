@@ -30,10 +30,10 @@ public class Sentence {
 	    for (int i = 0; i < s.length(); i++) {
 	        boolean isOK = false;
 	        for (int j = 0; j < OK.length(); j++) {
-	            if (Character.toLowerCase(s.charAt(i)) == OK.charAt(j)) {
+	            if (Character.toLowerCase(s.charAt(i)) == OK.charAt(j))
 	                isOK = true;
-	            	break;
-	        	}
+	            if (isOK)
+	                break;
 	        }
 	        if (!isOK) {
 	            s = s.substring(0,i) + s.substring(i+1);
@@ -59,7 +59,7 @@ public class Sentence {
 		  this.points = instancePoints();
 	  
 		  //changes the score based on the location of the sentence within the article
-		  this.points /= (article.getNumberOfSentences() / (article.getNumberOfSentences() - this.indexInArticle));
+		  this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
 		  if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
 			  this.points = 0;
 	  }
@@ -69,7 +69,7 @@ public class Sentence {
   public int instancePoints() {
 	  double count = 0;
 	    for(int i = 0;i < words.size();i++){
-	    	double temp = words.get(i).getInstances()*100;
+	    	double temp = words.get(i).getInstances()*10;
 	    	String posTemp = words.get(i).getPartOfSpeech();
 	   
 	    	//multiplies by certain weights depending on the part of speech (accesses the weightList array)

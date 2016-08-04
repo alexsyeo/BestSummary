@@ -37,19 +37,20 @@ public class Main {
 			
 			//stores all the text info in an ArrayList
 			List<String> initialPopAsString = new ArrayList<String>();
-			while(reader.readLine() != null){
-				initialPopAsString.add(reader.readLine());
+			String input = "";
+			while((input = reader.readLine()) != null){
+					initialPopAsString.add(input);
 			}
-			
 			//adds the info of the file to the genetic algorithm
 			for(int i=0;i<initialPopAsString.size();i++){
 				String[] temp1 = initialPopAsString.get(i).split(" ");
-				double[] temp2 = new double[temp1.length];
+				
+				double[] temp2 = new double[temp1.length-1];
 				for(int j=0; j<temp2.length;j++){
-					temp2[j] = Double.parseDouble(temp1[i]);
+					temp2[j] = Double.parseDouble(temp1[j]);
 				}
 				//currently there is an unused value in temp2, but it doesn't cause an error
-				sg.add(new SentenceGenome(temp2.clone(), temp2.clone()[temp2.length-1]));
+				sg.add(new SentenceGenome(temp2.clone(), Double.parseDouble(temp1[temp1.length-1])));
 			}
 			
 			reader.close();
@@ -99,6 +100,7 @@ public class Main {
 		
 		for (int i=0; i<articles.size();i++){
 			System.out.println(articles.get(i).getSummary());
+			System.out.println(articles.get(i).printInfo());
 			articles.get(i).setFitnessOfGenome();
 		}
 		
@@ -110,6 +112,7 @@ public class Main {
 			
 			String toWrite = "";
 			List<SentenceGenome> infoToWrite = Algorithm.getPop();
+			System.out.println("INFO to write:" + infoToWrite);
 			for(int i=0;i<infoToWrite.size();i++){
 				for(int j=0;j<infoToWrite.get(i).getWeights().length; j++){
 					toWrite += infoToWrite.get(i).getWeights()[j] + " ";
@@ -137,6 +140,8 @@ public class Main {
 				System.out.println("That is not a valid number. Please enter the number of sentences you want in the summary.");
 				response = s.nextInt();
 			}
+			
+			System.out.println("Please wait about 10 seconds...");
 			setSummarySentences(response);
 		}
 

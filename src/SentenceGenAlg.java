@@ -63,7 +63,7 @@ public class SentenceGenAlg {
 	}
 	
 	public SentenceGenome getNext(){
-		if(this.currentIndex == this.popSize){
+		if(this.currentIndex == this.popSize - 1){
 			this.Update();
 			this.currentIndex = 0;
 		}
@@ -76,7 +76,6 @@ public class SentenceGenAlg {
 		List<SentenceGenome> children = parents.get(0).haveChildren(parents.get(1), this.numChildrenPerGeneration, this.mutationRate);
 		this.population = children;
 		this.popSize = children.size();
-		
 	}
 	
 	public List<SentenceGenome> getPop(){
