@@ -1,7 +1,6 @@
 package bestsummarydevelopment;
 import java.util.Scanner;
 
-import java.util.Scanner;
 
 public class Article {
 
@@ -12,9 +11,9 @@ public class Article {
 	private String url;
 	private String title;
 	private SentenceGenome weightGenome;
-
 	static Scanner s = new Scanner(System.in);
 
+	//constructor for the Article class
 	public Article(String s, int numSentences, SentenceGenome sG) {
 		WordCounter counter = new WordCounter(s);
 		
@@ -23,24 +22,18 @@ public class Article {
 		this.sentences = counter.makeSentences(sG);
 		this.text = s;
 		
+		
+		//goes through the sentences and scores each of them
 		for (int i = 0; i < sentences.length; i++) {
-			try{
 			sentences[i].scoreSentence(this);
-			} catch(Exception e) {}
 		}
-		// Splits the large string into sentences by punctuation (|\\ is an "or"
-		// operator)
-
-		// here, we should take these "sentences" and turn them into Sentences
-		// by using the Sentence constructor, feeding in
-		// the Strings. This way, the code below will work.
-		// NOT EVERY PERIOD WILL SIGNIFY THE END OF A SENTENCE. WE NEED IF
-		// STATEMENTS (if it's not Mr., Mrs., etc.)
 
 		//find best sentences for the summary
 		bestSentences = findBestSentences();
 	}
 
+	
+	//goes through the sentences and finds the sentences with the most points
 	private Sentence[] findBestSentences() {
 		Sentence[] top = new Sentence[numSentencesInSummary];
 
@@ -77,7 +70,6 @@ public class Article {
 		}
 
 		return top;
-
 	}
 
 	public Sentence getSentence(int i) {
@@ -118,6 +110,8 @@ public class Article {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	//prints the URL of the article, title of the article, and the summary itself
 	public String getSummary() {
 		String ret = "";
 		//print best sentences
@@ -129,6 +123,8 @@ public class Article {
 		}
 		return ret;
 	}
+	
+	//prints relevant info for each sentence, including its index, number of words and number of points
 	public String printInfo() {
 		String ret = "";
 		//prints the info of each sentence
@@ -151,6 +147,7 @@ public class Article {
 		return rating;
 	}
 	
+	//sets the weights of the SentenceGenome
 	public boolean setWeightGenome(SentenceGenome sG){
 		this.weightGenome = sG;
 		return true;
