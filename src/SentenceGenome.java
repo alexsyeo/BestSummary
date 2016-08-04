@@ -70,7 +70,7 @@ public class SentenceGenome {
 		for (int i = 0; i < this.weights.length; i++){
 			if(Math.random()<mutationRate){
 				//the maximum change that a weight can go through is +-0.5
-				this.weights[i] += (Math.random()-0.5);
+				this.weights[i] += ((Math.random() * 2) - 1.0);
 			}
 		}
 		return true;
