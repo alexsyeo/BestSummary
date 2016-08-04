@@ -88,17 +88,16 @@ public class Sentence {
 	    		temp *= this.weightList[3];
 	    	//adjectives
 	    	if (posTemp.equals("JJ") || posTemp.equals("JJR") || posTemp.equals("JJS"))
-	    		temp *= this.weightList[4];
-	    	//quotations
-	    	if (this.containsString("\""))
-	    		count *= this.weightList[5];
-	    	
+	    		temp *= this.weightList[4];	
 	    	//sets the word equal to zero if the word is a coordinating conjunction, subordinating conjunction, preposition, determiner, or adverb
 	    	else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
 	    		temp = 0;
 	    
 	      count += temp;
 	    }
+	    //quotations
+    	if (this.containsString("\""))
+    		count *= this.weightList[5];
 	  return (int)count;
   }
     
