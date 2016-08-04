@@ -7,6 +7,8 @@ import opennlp.tools.sentdetect.SentenceModel;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class WordCounter {
@@ -46,10 +48,30 @@ public class WordCounter {
     	SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
     	String[] sentencesTemp = sentenceDetector.sentDetect(article);
     	
-    	sentences = new Sentence[sentencesTemp.length];
+    	List<String> sentencesTempTemp = new ArrayList<String>();
+    	for(String s:sentencesTemp){
+    		sentencesTempTemp.add(s);
+    	}
+    	
+    	for(int i=0;i<sentencesTempTemp.size();i++){
+    		if(sentencesTempTemp.get(i).contains("\n")){
+    			String[] temp = sentencesTempTemp.get(i).split("\n");
+    			sentencesTempTemp.remove(i);
+    			for (int j = temp.length-1; j >= 0; j--) {
+    				sentencesTempTemp.add(i, temp[j]);
+    				i++;
+    			}
+    		}
+    	}
+    	
+    	for(int i=0;i<sentencesTempTemp.size();i++){
+    		System.out.println("sentencesTempTemp.get(" + i + "):  " + sentencesTempTemp.get(i));
+    	}
+    	
+    	sentences = new Sentence[sentencesTempTemp.size()];
     	POSModel pos = setupPOSTagger();
-    	for (int i = 0; i < sentencesTemp.length; i++) {
-    		sentences[i] = new Sentence(sentencesTemp[i], pos, sg);
+    	for (int i = 0; i < sentencesTempTemp.size(); i++) {
+    		sentences[i] = new Sentence(sentencesTempTemp.get(i), pos, sg);
     		//I added the line of code below to set the location of each sentence in the article
     		sentences[i].setIndexInArticle(i);
     	}
