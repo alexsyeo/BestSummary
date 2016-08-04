@@ -59,7 +59,7 @@ public class Sentence {
 		  this.points = instancePoints();
 	  
 		  //changes the score based on the location of the sentence within the article
-		  this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
+		  this.points /= (article.getNumberOfSentences() / (article.getNumberOfSentences() - this.indexInArticle));
 		  if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
 			  this.points = 0;
 	  }
