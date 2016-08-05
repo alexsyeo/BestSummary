@@ -15,12 +15,12 @@ public class Sentence {
     private List<Word> words;
     private String text;
     private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
-    private static double NOUN_WEIGHT = 2;
-    private static double PROPER_NOUN_WEIGHT = 4;
-    private static double QUOTATION_WEIGHT = 0.5;
-
-    //haven't used this yet
-    private static double VERB_WEIGHT = 0.5;
+    private double NOUN_WEIGHT = 2;
+    private double PROPER_NOUN_WEIGHT = 4;
+    private double QUOTATION_WEIGHT = 0.5;
+    private double VERB_WEIGHT = 0.5;    
+    private double PTENSE_VERB_WEIGHT = 0.6;
+    private double ADJECTIVE_WEIGHT = 3;
 
     //constructor, creates a sentence that is split up by spaces
     public Sentence(String s, POSModel model) {
@@ -57,7 +57,7 @@ public class Sentence {
         this.points = instancePoints();
 
         //changes the score based on the location of the sentence within the article
-        this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
+        this.points /= (article.getNumberOfSentences() / (article.getNumberOfSentences() - this.indexInArticle));
         if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
             this.points = 0;
         return true;
@@ -69,19 +69,29 @@ public class Sentence {
             double temp = words.get(i).getInstances() * 100;
             String posTemp = words.get(i).getPartOfSpeech();
 
-            //multiplies by 2 if the word is a proper noun
-            if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
-                temp *= PROPER_NOUN_WEIGHT;
-            if (posTemp.equals("NN") || posTemp.equals("NNS"))
-                temp *= NOUN_WEIGHT;
-                //sets the word equal to zero if the word is a coordinating conjunction, subordinating conjunction, preposition, determiner, or adverb
-            else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
-                temp = 0;
+          //nouns
+	    	if (posTemp.equals("NN") || posTemp.equals("NNS"))
+	    		temp *= this.NOUN_WEIGHT;
+	    	//proper nouns
+	    	if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
+	    		temp *= this.PROPER_NOUN_WEIGHT;
+	    	//present tense verbs
+	    	if (posTemp.equals("VBP") || posTemp.equals("VBZ"))
+	    		temp *= this.PTENSE_VERB_WEIGHT;
+	    	//other types of verbs
+	    	if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN"))
+	    		temp *= this.VERB_WEIGHT;
+	    	//adjectives
+	    	if (posTemp.equals("JJ") || posTemp.equals("JJR") || posTemp.equals("JJS"))
+	    		temp *= this.ADJECTIVE_WEIGHT;
+	    	//sets the word equal to zero if the word is a coordinating conjunction, subordinating conjunction, preposition, determiner, or adverb
+	    	else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
+	    		temp = 0;
 
             count += temp;
         }
         if (this.containsString("\""))
-            count *= QUOTATION_WEIGHT;
+            count *= this.QUOTATION_WEIGHT;
         return (int) count;
     }
 

@@ -104,7 +104,7 @@ public class Article {
         return text;
     }
 
-    public int getLength() {
+    public int getNumberOfSentences() {
         return sentences.length;
     }
 
