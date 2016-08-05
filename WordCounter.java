@@ -13,6 +13,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -53,15 +55,31 @@ public class WordCounter {
         //initializes sentence detector
         SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
         String[] sentencesTemp = sentenceDetector.sentDetect(article);
+        
+        List<String> sentencesTempTemp = new ArrayList<String>();
+    	for(String s:sentencesTemp){
+    		sentencesTempTemp.add(s);
+    	}
+    	
+    	for(int i=0;i<sentencesTempTemp.size();i++){
+    		if(sentencesTempTemp.get(i).contains("\n")){
+    			String[] temp = sentencesTempTemp.get(i).split("\n");
+    			sentencesTempTemp.remove(i);
+    			for (int j = temp.length-1; j >= 0; j--) {
+    				sentencesTempTemp.add(i, temp[j]);
+    				i++;
+    			}
+    		}
+    	}
 
-        sentences = new Sentence[sentencesTemp.length];
+        sentences = new Sentence[sentencesTempTemp.size()];
 
 
         POSModel pos = MainActivity.posModel;
 
 
         for (int i = 0; i < sentencesTemp.length; i++) {
-            sentences[i] = new Sentence(sentencesTemp[i], pos);
+            sentences[i] = new Sentence(sentencesTempTemp.get(i), pos);
             //I added the line of code below to set the location of each sentence in the article
             sentences[i].setIndexInArticle(i);
         }
