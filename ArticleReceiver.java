@@ -144,7 +144,7 @@ public class ArticleReceiver {
     		else
     			article = merge(articleA, articleB);
     		//edited below
-    		newsArticles.add(new Article(articleA, MainActivity.SUMMARY_SENTENCES, this.context));
+    		newsArticles.add(new Article(article, MainActivity.SUMMARY_SENTENCES, this.context));
             Article a = newsArticles.get(newsArticles.size()-1);
             a.setTitle(title);
             a.setUrl(newsLink);
