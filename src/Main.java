@@ -132,12 +132,12 @@ public class Main {
 	}
 	//gets user input that determines the amount of sentences in the summary
 		public static void promptNumberOfSummarySentences() {
-			System.out.println("How many sentences do you want in the summary?");
+			System.out.println("How many sentences do you want in the summaries?");
 			int response = s.nextInt();
 			
 			//add something that checks the number of sentences in the article
 			while (response < 1 || response > 7) { //currently there will be an error if article is less than 7 sentences
-				System.out.println("That is not a valid number. Please enter the number of sentences you want in the summary.");
+				System.out.println("That is not a valid number. Please enter the number of sentences you want in the summaries.");
 				response = s.nextInt();
 			}
 			
