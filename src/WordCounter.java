@@ -64,9 +64,11 @@ public class WordCounter {
     		}
     	}
     	
+    	//this was just a test
+    	/*
     	for(int i=0;i<sentencesTempTemp.size();i++){
     		System.out.println("sentencesTempTemp.get(" + i + "):  " + sentencesTempTemp.get(i));
-    	}
+    	}*/
     	
     	sentences = new Sentence[sentencesTempTemp.size()];
     	POSModel pos = setupPOSTagger();
