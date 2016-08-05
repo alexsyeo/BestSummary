@@ -36,7 +36,7 @@ public class SentenceGenAlg {
 		SentenceGenome[] bestGenomes = new SentenceGenome[NBest];
 		
 		for (int q=0; q<bestGenomes.length; q++) {
-			bestGenomes[q] = new SentenceGenome(null);
+			bestGenomes[q] = new SentenceGenome(null, -9999999);
 		}
 		//this is the algorithm
 		for (int i = 0; i < bestGenomes.length; i++) {

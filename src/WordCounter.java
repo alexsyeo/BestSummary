@@ -48,6 +48,7 @@ public class WordCounter {
     	SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
     	String[] sentencesTemp = sentenceDetector.sentDetect(article);
     	
+    	//makes the sentences by splitting up the text
     	List<String> sentencesTempTemp = new ArrayList<String>();
     	for(String s:sentencesTemp){
     		sentencesTempTemp.add(s);

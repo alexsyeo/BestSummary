@@ -14,13 +14,41 @@ public class Sentence {
   private List<Word> words;
   private String text;
   private static String[] badList = {"caption", "subscribe", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related", "read"};
+  private static String[] doubleBadList = {"read more", "see also", "learn more"};
   
-  //list of different weights. NOUN, PROPER NOUN, PRESENT TENSE VERB, OTHER VERBS, ADJECTIVE, QUOTATION
+  //list of different weights. NOUN, PROPER NOUN, PRESENT TENSE VERB, OTHER VERBS, ADJECTIVE, QUOTATION, POSITION
   private double[] weightList;
   
   
   //constructor, creates a sentence that is split up by spaces
   public Sentence(String s, POSModel model, SentenceGenome sg) {
+	  for (int i = 0; i < s.length(); i++) {
+		  if (s.charAt(i) == '[') {
+			  for (int k = i; k < s.length(); k++) {
+				  if (s.charAt(k) == ']') {
+					  if (k+1 != s.length()) {
+						  s = s.substring(0, i) + s.substring(k+1);
+					  }
+					  else
+						  s = s.substring(0, i);
+				  }
+			  }
+		  }
+		  else if (s.charAt(i) == '(') {
+			  for (int k = i; k < s.length(); k++) {
+				  if (s.charAt(k) == ')') {
+					  if (k+1 != s.length()) {
+						  s = s.substring(0, i) + s.substring(k+1);
+					  }
+					  else
+						  s = s.substring(0, i);
+				  }
+			  }
+		  }
+		  
+	  }
+	  
+	  
 	  if(sg != null)
 		  this.weightList = sg.getWeights();
 	  else
@@ -40,6 +68,10 @@ public class Sentence {
 	            i--;
 	        }
 	    }
+	 
+	  
+	    
+	    
 	  words = new ArrayList<Word>();
 	  if(model != null){
 		POSTaggerME tagger = new POSTaggerME(model);
@@ -59,9 +91,9 @@ public class Sentence {
 		  this.points = instancePoints();
 	  
 		  //changes the score based on the location of the sentence within the article
-		  this.points /= (article.getNumberOfSentences() / (article.getNumberOfSentences() - this.indexInArticle));
-		  if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
-			  this.points = 0;
+		  this.points += ((article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences()) * weightList[6] * 100;
+		  if (this.checkBadList() || this.checkDoubleBadList() || this.checkBadWords() || this.checkFirstWord() || this.checkQuotation())
+			  this.points = -999999998;
 	  }
 	  return true;
   }
@@ -125,6 +157,32 @@ public class Sentence {
 		}
 		return false;
 	}
+	
+	//checks to see if any of the double bad words are in the sentence
+	public boolean checkDoubleBadList() {
+		//goes through doubleBadList
+		for (int i = 0; i < doubleBadList.length; i++) {
+			if (text.contains(doubleBadList[i]))
+				return true;
+		}
+		return false;
+	}
+	
+	
+	//checks to see if there is only one quotation mark in the sentence
+	public boolean checkQuotation() {
+		int count = 0;
+		for (int i = 0; i < text.length(); i++) {
+			if (text.charAt(i) == '\"') {
+				count++;
+				//System.out.println(text.charAt(i) + text.charAt(i-1));
+			}
+		}
+		if (count % 2 != 0)
+			return true;
+		return false;
+	}
+	
 	//checks to see if the first word in the sentence is a conjunction
 	public boolean checkFirstWord() {
 		String sub = words.get(0).getPartOfSpeech();

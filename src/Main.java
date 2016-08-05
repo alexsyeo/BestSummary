@@ -26,7 +26,8 @@ public class Main {
 	private static int summarySentences;
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) /*DELETE LATER*/ throws IOException, BoilerpipeProcessingException, SAXException {
+		
 		List<SentenceGenome> sg = new ArrayList<SentenceGenome>();
 		
 		//gets info from file
@@ -82,22 +83,6 @@ public class Main {
 		
 		articles.addAll(receiver1.getArticles());
 		
-
-		/*
-		//goes through all the articles to find the lowest number of sentences in an article
-		//NOT IMPLEMENTED NOW
-		
-		
-		low = articles.get(0).getNumberOfSentences();
-		
-		
-		for (int i = 1; i < articles.size(); i++) {
-			int sub = articles.get(i).getNumberOfSentences();
-			if (sub < low)
-				low = sub;
-		} */
-		
-		
 		for (int i=0; i<articles.size();i++){
 			System.out.println(articles.get(i).getSummary());
 			System.out.println(articles.get(i).printInfo());
@@ -130,7 +115,12 @@ public class Main {
 			e2.printStackTrace();
 		}
 	}
-	//gets user input that determines the amount of sentences in the summary
+	/*private static void test() throws IOException, BoilerpipeProcessingException, SAXException {
+		ArticleReceiver a = new ArticleReceiver();
+		a.gatherArticles("http://www.foxnews.com/entertainment/2016/08/05/adele-my-credit-card-was-declined-at-h-m.html");
+		
+	}*/
+		//gets user input that determines the amount of sentences in the summary
 		public static void promptNumberOfSummarySentences() {
 			System.out.println("How many sentences do you want in the summaries?");
 			int response = s.nextInt();

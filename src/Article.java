@@ -40,6 +40,7 @@ public class Article {
 		// initialize top array with blank sentences
 		for (int i = 0; i < top.length; i++) {
 			top[i] = new Sentence("", null, null);
+			top[i].setPoints(-999999999);
 		}
 
 		// get best sentences
@@ -131,7 +132,7 @@ public class Article {
 		for (int i = 0; i < bestSentences.length; i++) {
 			ret += (bestSentences[i].getInfo() + "\n");
 		}
-		ret += "\n";
+		ret += "\n" + sentences.length;
 		return ret;
 	}
 	
