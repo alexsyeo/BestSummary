@@ -16,10 +16,13 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import opennlp.tools.postag.POSModel;
 import opennlp.uima.postag.POSTagger;
 
@@ -56,8 +59,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                                     @Override
                                     public void run() {
                                         swipeRefreshLayout.setRefreshing(true);
-
-                                        fetchNews();
+                                        try {
+                                            fetchNews();
+                                        } catch(BoilerpipeProcessingException e){
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
         );
@@ -94,7 +100,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
                         toolbar.setTitle(sectionTitles[position]);
-                        fetchNews();
+                        try {
+                            fetchNews();
+                        } catch(BoilerpipeProcessingException e){
+                            e.printStackTrace();
+                        }
                         return false;
                     }
                 })
@@ -108,11 +118,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     @Override
-    public void onRefresh() {
-        fetchNews();
+    public void onRefresh()  {
+        try {
+            fetchNews();
+        } catch(BoilerpipeProcessingException e){
+            e.printStackTrace();
+        }
     }
 
-    public void fetchNews() {
+    public void fetchNews() throws BoilerpipeProcessingException{
         //show refresh icon
         swipeRefreshLayout.setRefreshing(true);
 
@@ -128,7 +142,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                         }
 
                         //AT LEAST 3, MOST 10
-                        return new ArticleReceiver(10, SPORTS_URL, getApplicationContext());
+                        try {
+                            return new ArticleReceiver(10, TOP_STORIES_URL, getApplicationContext());
+                        } catch(BoilerpipeProcessingException e1) {
+                            e1.printStackTrace();
+                        } catch(SAXException e2){
+                            e2.printStackTrace();
+                        }
+                        return null;
                     }
                 })
                 .doWhenFinished(new AsyncJob.AsyncResultAction<ArticleReceiver>() {

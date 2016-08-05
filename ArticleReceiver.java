@@ -4,6 +4,13 @@ import android.content.Context;
 import android.os.StrictMode;
 import android.widget.Toast;
 
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
+import de.l3s.boilerpipe.document.TextDocument;
+import de.l3s.boilerpipe.extractors.CommonExtractors;
+import de.l3s.boilerpipe.sax.BoilerpipeSAXInput;
+import de.l3s.boilerpipe.sax.HTMLDocument;
+import de.l3s.boilerpipe.sax.HTMLFetcher;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +22,7 @@ import java.util.ArrayList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.xml.sax.SAXException;
 
 public class ArticleReceiver {
 
@@ -23,7 +31,7 @@ public class ArticleReceiver {
     private ArrayList<String> newsTitles = new ArrayList<String>();
     private Context context;
 
-    public ArticleReceiver(int numArticles, String link, Context context){
+    public ArticleReceiver(int numArticles, String link, Context context) throws BoilerpipeProcessingException, SAXException {
         this.context = context;
         if (numArticles != 0) {
 
@@ -42,7 +50,7 @@ public class ArticleReceiver {
         }
     }
 
-    private void receiveNewsArticles(int numArticles, String urlAddress) {
+    private void receiveNewsArticles(int numArticles, String urlAddress) throws BoilerpipeProcessingException, SAXException {
         URL rssUrl = null;
         // if connected to Internet
         if (internetIsAvailable()) {
@@ -83,7 +91,7 @@ public class ArticleReceiver {
                     startPos = newsLinks.get(i).indexOf("url=") + 4;
                     newsLinks.set(i, newsLinks.get(i).substring(startPos));
                 }
-
+                
                 //fix apostrophe format in titles
                 for (int i = 0; i < newsTitles.size(); i++) {
                     while (newsTitles.get(i).contains("&apos;") || newsTitles.get(i).contains("&lt;") || newsTitles.get(i).contains("&gt;") || newsTitles.get(i).contains("&amp;")) {
@@ -104,21 +112,12 @@ public class ArticleReceiver {
                     }
                 }
 
-                // gather articles from "section" tag of article using Jsoup
-                for (int i = 0; i < newsTitles.size(); i++) {
-                    // get webpage
-                    if(!newsTitles.get(i).isEmpty()) {
-                        Document doc = Jsoup.connect(newsLinks.get(i)).timeout(5000).get();
-                        Elements element = doc.select("p");
-                        String article = element.text();
-
-                        newsArticles.add(new Article(article, MainActivity.SUMMARY_SENTENCES, context));
-
-                        Article a = newsArticles.get(newsArticles.size() - 1);
-                        a.setTitle(newsTitles.get(i));
-                        a.setUrl(newsLinks.get(i));
-                    }
+             // gather articles from "section" tag of article using Jsoup
+                for (String newsLink : newsLinks) {
+                	gatherArticles(newsLink);
                 }
+
+                
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -127,6 +126,42 @@ public class ArticleReceiver {
             return;
         }
     }
+    
+    public boolean gatherArticles(String newsLink) throws IOException, BoilerpipeProcessingException, SAXException {
+        //Jsoup:
+            Document doc = Jsoup.connect(newsLink).timeout(5000).get();
+            Elements element = doc.select("p");
+            String articleA = element.text();
+        //Boilerpipe:
+            final HTMLDocument htmlDoc = HTMLFetcher.fetch(new URL(newsLink));
+    		final TextDocument docB = new BoilerpipeSAXInput(htmlDoc.toInputSource()).getTextDocument();
+    		String articleB = CommonExtractors.ARTICLE_EXTRACTOR.getText(docB);
+    		String title = docB.getTitle();
+    	//Merging two versions:
+    		String article;
+    		if (isNYT(newsLink))
+    			article = mergeNYT(articleA);
+    		else
+    			article = merge(articleA, articleB);
+    		//edited below
+    		newsArticles.add(new Article(articleA, MainActivity.SUMMARY_SENTENCES, this.context));
+            Article a = newsArticles.get(newsArticles.size()-1);
+            a.setTitle(title);
+            a.setUrl(newsLink);
+    		
+            //Test Stuff:
+            /*System.out.println("A:\n" + articleA + "\n\n");
+            System.out.println("B:\n" + articleB + "\n\n");
+            System.out.println(newsLink + "\n" + title + "\n\n" + article+ "\n-----------------\n\n\n\n");*/
+    		return true;
+    		
+    		
+            //newsArticles.add(new Article(article, Main.SUMMARY_SENTENCES));
+            
+            //Article a = newsArticles.get(newsArticles.size()-1);
+            //a.setTitle(title);
+            //a.setUrl(newsLink);
+        }
 
     private String merge(String articleA, String articleB) {
     	int maxCount = 0;
@@ -152,6 +187,73 @@ public class ArticleReceiver {
 			}
 		}
 		return articleB.substring(maxIndex);
+	}
+    
+    public boolean isNYT(String newsLink) {
+		String url = "http://www.nytimes.com";
+		return (newsLink.length() >= url.length() && newsLink.substring(0, url.length()).equals(url));
+	}
+    
+    private String mergeNYT(String articleA) {
+    	int charCount = 150;
+    	//Dash thing:
+    	boolean dashed = false;
+		int index = 0; 
+		for (int i = 0; i < charCount; i++) {
+			if (articleA.charAt(i) == '—') {
+				index = i;
+				articleA = articleA.substring(index+2);
+				dashed = true;
+				break;
+			}
+		}
+    	if (!dashed) {
+    		//Removing ads:
+        	String bad1 = "Advertisement Advertisement ";
+    		if (articleA.length() >= bad1.length() && articleA.substring(0,bad1.length()).equals(bad1))
+    			articleA = articleA.substring(bad1.length());
+    		//Removing authors/date:
+    		String letters = "abcdefghijklmnopqrstuvwxyz";
+    		index = 0;
+    		int count = 0;
+    		for (int i = 0; i < charCount; i++) {
+    			boolean isCapital = articleA.charAt(i) == ' ';
+    			if (!isCapital) {
+    				boolean isLetter = false;
+        			for (int j = 0; j < letters.length(); j++) {
+        				if (Character.toLowerCase(articleA.charAt(i)) == letters.charAt(j))
+        					isLetter = true;
+        			}
+        			if (isLetter)
+        				isCapital = Character.toLowerCase(articleA.charAt(i)) != articleA.charAt(i);
+    			}
+    			if (isCapital) {
+    				count++;
+    				if (count > 8 /*Change this var*/)
+    					index = i;
+    			}
+    			if (!isCapital)
+    				count = 0;
+    		}
+    		if (index != 0) {
+    			for (int i = index; i < articleA.length(); i++) {
+    				boolean isLetter1 = false;
+    				boolean isLetter2 = false;
+    				for (int j = 0; j < letters.length(); j++) {
+    					if (Character.toLowerCase(articleA.charAt(i)) == letters.charAt(j))
+    						isLetter1 = true;
+    					if (Character.toLowerCase(articleA.charAt(i+1)) == letters.charAt(j))
+    						isLetter2 = true;
+    				}
+    				if ((isLetter1 && isLetter2) && (Character.toLowerCase(articleA.charAt(i)) != articleA.charAt(i) && Character.toLowerCase(articleA.charAt(i+1)) == articleA.charAt(i+1))) {
+    					articleA = articleA.substring(i);
+    					break;
+    				}
+    					
+    			}
+    		}
+    	}
+		return articleA;
 	}
 
 	public ArrayList<Article> getArticles() {
