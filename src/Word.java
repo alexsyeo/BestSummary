@@ -41,6 +41,7 @@ public class Word {
     }
     
     public String toString() {
-        return word + " [POS: " + this.partOfSpeech + "] [Inst. " + this.instances + "]\t";
+        return word;
+        //" [POS: " + this.partOfSpeech + "] [Inst. " + this.instances + "]\t";
     }
 }

@@ -13,7 +13,7 @@ public class Sentence {
   private int indexInArticle;
   private List<Word> words;
   private String text;
-  private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
+  private static String[] badList = {"caption", "subscribe", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related", "read"};
   
   //list of different weights. NOUN, PROPER NOUN, PRESENT TENSE VERB, OTHER VERBS, ADJECTIVE, QUOTATION
   private double[] weightList;

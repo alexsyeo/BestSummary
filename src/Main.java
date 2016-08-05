@@ -112,7 +112,7 @@ public class Main {
 			
 			String toWrite = "";
 			List<SentenceGenome> infoToWrite = Algorithm.getPop();
-			System.out.println("INFO to write:" + infoToWrite);
+
 			for(int i=0;i<infoToWrite.size();i++){
 				for(int j=0;j<infoToWrite.get(i).getWeights().length; j++){
 					toWrite += infoToWrite.get(i).getWeights()[j] + " ";
