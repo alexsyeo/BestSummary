@@ -84,8 +84,25 @@ public class ArticleReceiver {
                     newsLinks.set(i, newsLinks.get(i).substring(startPos));
                 }
 
-                System.out.println(newsTitles);
-                System.out.println(newsLinks);
+                //fix apostrophe format in titles
+                for (int i = 0; i < newsTitles.size(); i++) {
+                    while (newsTitles.get(i).contains("&apos;") || newsTitles.get(i).contains("&lt;") || newsTitles.get(i).contains("&gt;") || newsTitles.get(i).contains("&amp;")) {
+                        int index;
+                        if(newsTitles.get(i).contains("&apos;")) {
+                            index = newsTitles.get(i).indexOf("&apos;");
+                            newsTitles.set(i, newsTitles.get(i).substring(0, index) + "\'" + newsTitles.get(i).substring(index + 6));
+                        }else if(newsTitles.get(i).contains("&lt;")){
+                            index = newsTitles.get(i).indexOf("&lt;");
+                            newsTitles.set(i, newsTitles.get(i).substring(0, index) + "<" + newsTitles.get(i).substring(index + 4));
+                        }else if(newsTitles.get(i).contains("&gt;")){
+                            index = newsTitles.get(i).indexOf("&gt;");
+                            newsTitles.set(i, newsTitles.get(i).substring(0, index) + ">" + newsTitles.get(i).substring(index + 4));
+                        }else if(newsTitles.get(i).contains("&amp;")){
+                            index = newsTitles.get(i).indexOf("&amp;");
+                            newsTitles.set(i, newsTitles.get(i).substring(0, index) + "&" + newsTitles.get(i).substring(index + 5));
+                        }
+                    }
+                }
 
                 // gather articles from "section" tag of article using Jsoup
                 for (int i = 0; i < newsTitles.size(); i++) {
