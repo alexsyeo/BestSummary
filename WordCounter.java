@@ -32,28 +32,9 @@ public class WordCounter {
     }
 
     public Sentence[] makeSentences() {
-        SentenceModel model = null;
-        InputStream modelIn = null;
-
-        try {
-            modelIn = context.getResources().openRawResource(R.raw.en_sent);
-            model = new SentenceModel(modelIn);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (modelIn != null) {
-                try {
-                    modelIn.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }else{
-                //Error
-            }
-        }
 
         //initializes sentence detector
-        SentenceDetectorME sentenceDetector = new SentenceDetectorME(model);
+        SentenceDetectorME sentenceDetector = new SentenceDetectorME(MainActivity.getSentenceModel());
         String[] sentencesTemp = sentenceDetector.sentDetect(article);
         
         List<String> sentencesTempTemp = new ArrayList<String>();
@@ -75,7 +56,7 @@ public class WordCounter {
         sentences = new Sentence[sentencesTempTemp.size()];
 
 
-        POSModel pos = MainActivity.posModel;
+        POSModel pos = MainActivity.getPOSModel();
 
 
         for (int i = 0; i < sentencesTemp.length; i++) {

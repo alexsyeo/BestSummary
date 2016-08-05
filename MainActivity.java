@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import opennlp.tools.postag.POSModel;
+import opennlp.tools.sentdetect.SentenceModel;
 import opennlp.uima.postag.POSTagger;
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public static final String BUSINESS_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=b&output=rss";
     public static final int SUMMARY_SENTENCES = 3;
     public static POSModel posModel;
+    public static SentenceModel sentenceModel;
 
     private Toolbar toolbar;
     private ListView listView;
@@ -140,6 +142,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                             //load tagger
                             posModel = setupPOSTagger();
                         }
+                        if(sentenceModel == null){
+                            //load sentence detector
+                            sentenceModel = setupSentenceModel();
+                        }
 
                         //AT LEAST 3, MOST 10
                         try {
@@ -189,6 +195,36 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         }
         return model;
+    }
+    public SentenceModel setupSentenceModel() {
+        SentenceModel model = null;
+        InputStream modelIn = null;
+
+        try {
+            modelIn = getResources().openRawResource(R.raw.en_sent);
+            model = new SentenceModel(modelIn);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (modelIn != null) {
+                try {
+                    modelIn.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                //Error
+            }
+        }
+        return model;
+    }
+
+    public static POSModel getPOSModel(){
+        return posModel;
+    }
+
+    public static SentenceModel getSentenceModel(){
+        return sentenceModel;
     }
 
 
