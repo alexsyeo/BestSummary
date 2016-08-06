@@ -185,9 +185,13 @@ public class Sentence {
 	
 	//checks to see if the first word in the sentence is a conjunction
 	public boolean checkFirstWord() {
-		String sub = words.get(0).getPartOfSpeech();
-		if (sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB") || words.get(0).toString().toLowerCase().equals("read"))
-			return true;
+	
+		//why is this necessary? encountered an error without it
+		if (words.size() > 0) {
+			String sub = words.get(0).getPartOfSpeech();
+			if (sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB") || words.get(0).toString().toLowerCase().equals("read"))
+				return true;
+		}
 		return false;
 	}
 	
