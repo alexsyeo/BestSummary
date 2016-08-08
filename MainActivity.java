@@ -260,10 +260,10 @@ public class MainActivity extends AppCompatActivity {
 
     public SentenceModel setupSentenceModel() {
         SentenceModel model = null;
-        InputStream modelIn = null;
+        ByteBufferInputStream modelIn = null;
 
         try {
-            InputStream stream = getResources().openRawResource(R.raw.en_pos_maxent);
+            InputStream stream = getResources().openRawResource(R.raw.en_sent);
             byte[] b = IOUtils.toByteArray(stream);
             ByteBuffer buf = ByteBuffer.wrap(b);
 
