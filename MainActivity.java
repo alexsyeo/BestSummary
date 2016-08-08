@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
             byte[] b = IOUtils.toByteArray(stream);
             ByteBuffer buf = ByteBuffer.wrap(b);
 
-            modelIn = new ByteBufferInputStream(buf);;
+            modelIn = new ByteBufferInputStream(buf);
             model = new POSModel(modelIn);
         } catch (IOException e) {
             // Model loading failed, handle the error
@@ -260,14 +260,10 @@ public class MainActivity extends AppCompatActivity {
 
     public SentenceModel setupSentenceModel() {
         SentenceModel model = null;
-        ByteBufferInputStream modelIn = null;
+        InputStream modelIn = null;
 
         try {
-            InputStream stream = getResources().openRawResource(R.raw.en_sent);
-            byte[] b = IOUtils.toByteArray(stream);
-            ByteBuffer buf = ByteBuffer.wrap(b);
-
-            modelIn = new ByteBufferInputStream(buf);
+            modelIn = getResources().openRawResource(R.raw.en_sent);
             model = new SentenceModel(modelIn);
         } catch (IOException e) {
             e.printStackTrace();
