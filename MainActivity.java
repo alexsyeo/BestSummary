@@ -30,8 +30,15 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.xml.sax.SAXException;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +46,8 @@ import java.util.concurrent.Executors;
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.sentdetect.SentenceModel;
+
+import org.apache.commons.io.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -177,13 +186,19 @@ public class MainActivity extends AppCompatActivity {
                         //setup POSModel
                         if (posModel == null) {
                             //load tagger
+                            long time1 = System.currentTimeMillis();
                             posModel = setupPOSModel();
+                            long time2 = System.currentTimeMillis();
+                            System.out.println("POSMODEL TIME TAKEN IN msecs: " + (time2-time1));
                         }
 
                         //setup model
                         if (sentenceModel == null) {
                             //load sentence detector
+                            long time1 = System.currentTimeMillis();
                             sentenceModel = setupSentenceModel();
+                            long time2 = System.currentTimeMillis();
+                            System.out.println("SENTENCEMODEL TIME TAKEN IN msecs: " + (time2-time1));
                         }
 
                         //AT LEAST 3, MOST 10
@@ -219,10 +234,14 @@ public class MainActivity extends AppCompatActivity {
 
     //sets up the part of speech tagger
     public POSModel setupPOSModel() {
-        InputStream modelIn = null;
+        ByteBufferInputStream modelIn = null;
         POSModel model = null;
         try {
-            modelIn = getResources().openRawResource(R.raw.en_pos_maxent);
+            InputStream stream = getResources().openRawResource(R.raw.en_pos_maxent);
+            byte[] b = IOUtils.toByteArray(stream);
+            ByteBuffer buf = ByteBuffer.wrap(b);
+
+            modelIn = new ByteBufferInputStream(buf);;
             model = new POSModel(modelIn);
         } catch (IOException e) {
             // Model loading failed, handle the error
@@ -244,7 +263,11 @@ public class MainActivity extends AppCompatActivity {
         InputStream modelIn = null;
 
         try {
-            modelIn = getResources().openRawResource(R.raw.en_sent);
+            InputStream stream = getResources().openRawResource(R.raw.en_pos_maxent);
+            byte[] b = IOUtils.toByteArray(stream);
+            ByteBuffer buf = ByteBuffer.wrap(b);
+
+            modelIn = new ByteBufferInputStream(buf);
             model = new SentenceModel(modelIn);
         } catch (IOException e) {
             e.printStackTrace();
@@ -255,8 +278,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else {
-                //Error
             }
         }
         return model;
