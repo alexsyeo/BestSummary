@@ -171,7 +171,7 @@ public class ArticleReceiver {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (newsArticles.get(newsArticles.size() - 1).getLength() > 1 && newsArticles.get(newsArticles.size() - 1).getCharLength() > 200) {
+                    if (newsArticles.get(newsArticles.size() - 1).getNumberOfSentences() > 1 && newsArticles.get(newsArticles.size() - 1).getCharLength() > 200) {
                         MainActivity.addArticleToList(newsArticles.get(newsArticles.size() - 1));
                     }
                 }
