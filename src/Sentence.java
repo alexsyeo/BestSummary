@@ -15,6 +15,7 @@ public class Sentence {
   private String text;
   private static String[] badList = {"caption", "subscribe", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related", "read"};
   private static String[] doubleBadList = {"read more", "see also", "learn more"};
+  private static final double QUOTATION_WEIGHT = 0.5;
   
   //list of different weights. NOUN, PROPER NOUN, PRESENT TENSE VERB, OTHER VERBS, ADJECTIVE, QUOTATION, POSITION
   private double[] weightList;
@@ -91,9 +92,11 @@ public class Sentence {
 		  this.points = instancePoints();
 	  
 		  //changes the score based on the location of the sentence within the article
-		  this.points += ((article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences()) * weightList[6] * 100;
+		  this.points += ((article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences()) * weightList[5] * 100;
 		  if (this.checkBadList() || this.checkDoubleBadList() || this.checkBadWords() || this.checkFirstWord() || this.checkQuotation())
 			  this.points = -999999998;
+		  //testing this, divides points by number of words
+		  this.points = this.points * this.points / this.numWords;
 	  }
 	  return true;
   }
@@ -129,7 +132,7 @@ public class Sentence {
 	    }
 	    //quotations
     	if (this.containsString("\""))
-    		count *= this.weightList[5];
+    		count *= QUOTATION_WEIGHT;
 	  return (int)count;
   }
     

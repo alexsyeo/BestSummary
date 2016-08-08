@@ -75,10 +75,13 @@ public class WordCounter {
     	POSModel pos = setupPOSTagger();
     	for (int i = 0; i < sentencesTempTemp.size(); i++) {
     		sentences[i] = new Sentence(sentencesTempTemp.get(i), pos, sg);
+    		
     		//I added the line of code below to set the location of each sentence in the article
     		sentences[i].setIndexInArticle(i);
     	}
+    	
     	setWordNumbers();
+    	
     	
     	return sentences;
     }

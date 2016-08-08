@@ -27,6 +27,7 @@ public class Article {
 		for (int i = 0; i < sentences.length; i++) {
 			sentences[i].scoreSentence(this);
 		}
+		
 
 		//find best sentences for the summary
 		bestSentences = findBestSentences();
