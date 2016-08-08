@@ -34,29 +34,29 @@ public class WordCounter {
     public Sentence[] makeSentences() {
 
         //initializes sentence detector
-        SentenceDetectorME sentenceDetector = new SentenceDetectorME(MainActivity.getSentenceModel());
+        SentenceDetectorME sentenceDetector = new SentenceDetectorME(MainActivity.sentenceModel);
         String[] sentencesTemp = sentenceDetector.sentDetect(article);
-        
+
         List<String> sentencesTempTemp = new ArrayList<String>();
-    	for(String s:sentencesTemp){
-    		sentencesTempTemp.add(s);
-    	}
-    	
-    	for(int i=0;i<sentencesTempTemp.size();i++){
-    		if(sentencesTempTemp.get(i).contains("\n")){
-    			String[] temp = sentencesTempTemp.get(i).split("\n");
-    			sentencesTempTemp.remove(i);
-    			for (int j = temp.length-1; j >= 0; j--) {
-    				sentencesTempTemp.add(i, temp[j]);
-    				i++;
-    			}
-    		}
-    	}
+        for(String s:sentencesTemp){
+            sentencesTempTemp.add(s);
+        }
+
+        for(int i=0;i<sentencesTempTemp.size();i++){
+            if(sentencesTempTemp.get(i).contains("\n")){
+                String[] temp = sentencesTempTemp.get(i).split("\n");
+                sentencesTempTemp.remove(i);
+                for (int j = temp.length-1; j >= 0; j--) {
+                    sentencesTempTemp.add(i, temp[j]);
+                    i++;
+                }
+            }
+        }
 
         sentences = new Sentence[sentencesTempTemp.size()];
 
 
-        POSModel pos = MainActivity.getPOSModel();
+        POSModel pos = MainActivity.posModel;
 
 
         for (int i = 0; i < sentencesTempTemp.size(); i++) {

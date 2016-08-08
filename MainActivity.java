@@ -1,13 +1,25 @@
 package com.gigstudios.newssummary;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arasthel.asyncjob.AsyncJob;
@@ -21,54 +33,75 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.sentdetect.SentenceModel;
-import opennlp.uima.postag.POSTagger;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity {
 
-    public static final String TOP_STORIES_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&output=rss";
-    public static final String SPORTS_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=s&output=rss";
-    public static final String BUSINESS_URL = "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=b&output=rss";
-    public static final int SUMMARY_SENTENCES = 3;
+    public static String[] sectionUrls = {"https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=w&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=n&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=s&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=b&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=tc&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=e&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=snc&output=rss",
+            "https://news.google.com/news?cf=all&hl=en&pz=1&ned=us&topic=m&output=rss"};
+
+    public static int currentSection = 0;
+    public static int SUMMARY_SENTENCES;
     public static POSModel posModel;
     public static SentenceModel sentenceModel;
+    private boolean isRefreshing = true;
 
     private Toolbar toolbar;
     private ListView listView;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private ImageView refreshImageView;
 
-    private ArrayList<Article> newsArticles = new ArrayList<>();
-    private NewsListAdapter listAdapter;
+    private static ArrayList<Article> newsArticles = new ArrayList<>();
+    private static NewsListAdapter listAdapter;
+    public static ArrayList<AsyncJob<ArticleReceiver>> runningTasks = new ArrayList<>();
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //load settings
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SUMMARY_SENTENCES = Integer.parseInt(SP.getString(getString(R.string.num_sentences_key), "3"));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //load settings
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SUMMARY_SENTENCES = Integer.parseInt(SP.getString(getString(R.string.num_sentences_key), "3"));
+
         //initialize layouts
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         listView = (ListView) findViewById(R.id.listView);
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        /**
-         * Showing Swipe Refresh animation on activity create
-         * As animation won't start on onCreate, post runnable is used
-         */
-        swipeRefreshLayout.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        swipeRefreshLayout.setRefreshing(true);
-                                        try {
-                                            fetchNews();
-                                        } catch(BoilerpipeProcessingException e){
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-        );
+        refreshImageView = (ImageView) toolbar.findViewById(R.id.refresh_image_view);
+        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
+        rotation.setRepeatCount(Animation.INFINITE);
+        refreshImageView.setAnimation(rotation);
+
+        //refresh button on click
+        refreshImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isRefreshing) {
+                    fetchNews();
+                    isRefreshing = true;
+                }
+            }
+        });
 
         //toolbar setup
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -102,11 +135,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
                         toolbar.setTitle(sectionTitles[position]);
-                        try {
-                            fetchNews();
-                        } catch(BoilerpipeProcessingException e){
-                            e.printStackTrace();
-                        }
+                        currentSection = position;
+                        fetchNews();
                         return false;
                     }
                 })
@@ -117,66 +147,75 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         //setup listview
         listAdapter = new NewsListAdapter(this, newsArticles);
         listView.setAdapter(listAdapter);
+
+        fetchNews();
     }
 
-    @Override
-    public void onRefresh()  {
-        try {
-            fetchNews();
-        } catch(BoilerpipeProcessingException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void fetchNews() throws BoilerpipeProcessingException{
+    public void fetchNews() {
         //show refresh icon
-        swipeRefreshLayout.setRefreshing(true);
+        refreshImageView.getAnimation().start();
 
-        new AsyncJob.AsyncJobBuilder<ArticleReceiver>()
+        //stop all other tasks
+        if (!runningTasks.isEmpty()) {
+            for (int i = 0; i < runningTasks.size(); i++) {
+                runningTasks.remove(i);
+            }
+        }
+
+        //clear articles
+        newsArticles.clear();
+        listAdapter.notifyDataSetChanged();
+
+        AsyncJob<ArticleReceiver> builder = new AsyncJob.AsyncJobBuilder<ArticleReceiver>()
                 .doInBackground(new AsyncJob.AsyncAction<ArticleReceiver>() {
                     @Override
                     public ArticleReceiver doAsync() {
                         // Do some background work
-                        //setup POSTagger
-                        if(posModel == null){
+                        //setup POSModel
+                        if (posModel == null) {
                             //load tagger
-                            posModel = setupPOSTagger();
+                            posModel = setupPOSModel();
                         }
-                        if(sentenceModel == null){
+
+                        //setup model
+                        if (sentenceModel == null) {
                             //load sentence detector
                             sentenceModel = setupSentenceModel();
                         }
 
                         //AT LEAST 3, MOST 10
                         try {
-                            return new ArticleReceiver(10, TOP_STORIES_URL, getApplicationContext());
-                        } catch(BoilerpipeProcessingException e1) {
-                            e1.printStackTrace();
-                        } catch(SAXException e2){
-                            e2.printStackTrace();
+                            return new ArticleReceiver(10, sectionUrls[currentSection], getApplicationContext(), MainActivity.this);
+                        } catch (BoilerpipeProcessingException | SAXException e) {
+                            e.printStackTrace();
                         }
+
                         return null;
                     }
                 })
                 .doWhenFinished(new AsyncJob.AsyncResultAction<ArticleReceiver>() {
                     @Override
                     public void onResult(ArticleReceiver result) {
-                        if(result.getArticles().size() != 0) {
-                            //success!
-                            newsArticles.clear();
-                            newsArticles.addAll(result.getArticles());
-                            listAdapter.notifyDataSetChanged();
-                        }else{
-                            //failed
-                            Toast.makeText(MainActivity.this, R.string.failed_to_gather_error, Toast.LENGTH_SHORT).show();
+                        if (result.getSectionLink().equals(sectionUrls[currentSection])) {
+                            if (newsArticles.size() == 0) {
+                                Toast.makeText(MainActivity.this, R.string.failed_to_gather_error, Toast.LENGTH_SHORT).show();
+                            }
+
+                            refreshImageView.getAnimation().cancel();
                         }
-                        swipeRefreshLayout.setRefreshing(false);
+
+                        isRefreshing = false;
                     }
-                }).create().start();
+                })
+                .create();
+
+        //add to running tasks list and start task
+        runningTasks.add(builder);
+        runningTasks.get(0).start();
     }
 
     //sets up the part of speech tagger
-    public POSModel setupPOSTagger() {
+    public POSModel setupPOSModel() {
         InputStream modelIn = null;
         POSModel model = null;
         try {
@@ -196,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         }
         return model;
     }
+
     public SentenceModel setupSentenceModel() {
         SentenceModel model = null;
         InputStream modelIn = null;
@@ -219,13 +259,32 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         return model;
     }
 
-    public static POSModel getPOSModel(){
-        return posModel;
+    public static void addArticleToList(Article article) {
+        newsArticles.add(article);
+        listAdapter.notifyDataSetChanged();
     }
 
-    public static SentenceModel getSentenceModel(){
-        return sentenceModel;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar_options, menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
+        switch (id) {
+            case R.id.settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+            case R.id.about:
+
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

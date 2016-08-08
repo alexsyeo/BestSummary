@@ -23,6 +23,15 @@ public class Article {
             sentences[i].scoreSentence(this);
         }
 
+        // Splits the large string into sentences by punctuation (|\\ is an "or"
+        // operator)
+
+        // here, we should take these "sentences" and turn them into Sentences
+        // by using the Sentence constructor, feeding in
+        // the Strings. This way, the code below will work.
+        // NOT EVERY PERIOD WILL SIGNIFY THE END OF A SENTENCE. WE NEED IF
+        // STATEMENTS (if it's not Mr., Mrs., etc.)
+
         //find best sentences for the summary
         bestSentences = findBestSentences();
     }
@@ -67,12 +76,13 @@ public class Article {
     }
 
     public String getSummary() {
-		String ret = "";
-		for (int i = 0; i < bestSentences.length; i++) {
-            ret += (bestSentences[i] + " ");
-		}
-		return ret;
-	}
+        String summary = "";
+        for (int i = 0; i < numSentencesInSummary; i++) {
+            summary += bestSentences[i] + " ";
+        }
+
+        return summary;
+    }
 
     public Sentence getSentence(int i) {
         return this.sentences[i];
@@ -94,7 +104,7 @@ public class Article {
         return text;
     }
 
-    public int getNumberOfSentences() {
+    public int getLength() {
         return sentences.length;
     }
 
@@ -112,6 +122,18 @@ public class Article {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String printSummary() {
+        String ret = "";
+        //print best sentences
+        ret += ("---------------------------------------\n");
+        ret += ("URL:\t" + url + "\n");
+        ret += ("Title:\t" + title + "\n");
+        for (int i = 0; i < bestSentences.length; i++) {
+            ret += (bestSentences[i] + "\n");
+        }
+        return ret;
     }
 
     public String printInfo() {
