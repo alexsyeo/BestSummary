@@ -48,6 +48,7 @@ import opennlp.tools.postag.POSModel;
 import opennlp.tools.sentdetect.SentenceModel;
 
 import org.apache.commons.io.*;
+import java.io.ByteArrayInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -234,18 +235,21 @@ public class MainActivity extends AppCompatActivity {
 
     //sets up the part of speech tagger
     public POSModel setupPOSModel() {
-        ByteBufferInputStream modelIn = null;
+        //ByteBufferInputStream modelIn = null;
+        InputStream modelIn = null;
         POSModel model = null;
         try {
             InputStream stream = getResources().openRawResource(R.raw.en_pos_maxent);
-            byte[] b = IOUtils.toByteArray(stream);
-            ByteBuffer buf = ByteBuffer.wrap(b);
-
-            modelIn = new ByteBufferInputStream(buf);
+            //byte[] b = IOUtils.toByteArray(stream);
+            //ByteBuffer buf = ByteBuffer.wrap(b);
+            final byte[] data = IOUtils.toByteArray(stream);
+            modelIn = new ByteArrayInputStream(data);
             model = new POSModel(modelIn);
         } catch (IOException e) {
             // Model loading failed, handle the error
+            System.out.println("---------beginning of error stacktrace-----------");
             e.printStackTrace();
+            System.out.println("---------end of error stacktrace-----------------");
         } finally {
             if (modelIn != null) {
                 try {
@@ -255,6 +259,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        System.out.println("testing123 testing123");
+        System.out.println("------------POS MODEL: " + model);
         return model;
     }
 
