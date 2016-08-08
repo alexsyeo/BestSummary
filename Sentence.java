@@ -15,15 +15,42 @@ public class Sentence {
     private List<Word> words;
     private String text;
     private static String[] badList = {"cnn", "caption", "photo", "images", "email", "espn", "facebook", "twitter", "pinterest", "whatsapp", "linkedin", "related"};
+    private static String[] doubleBadList = {"read more", "see also", "learn more"};
     private static double NOUN_WEIGHT = 2;
     private static double PROPER_NOUN_WEIGHT = 4;
     private static double QUOTATION_WEIGHT = 0.5;
-
-    //haven't used this yet
-    private static double VERB_WEIGHT = 0.5;
+    private static double LENGTH_WEIGHT = 2;
+    private static double PRESENT_VERB_WEIGHT = 1;
+    private static double VERB_WEIGHT = 1.5;
+    private static double ADJECTIVE_WEIGHT = 1;
 
     //constructor, creates a sentence that is split up by spaces
     public Sentence(String s, POSModel model) {
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '[') {
+                for (int k = i; k < s.length(); k++) {
+                    if (s.charAt(k) == ']') {
+                        if (k+1 != s.length()) {
+                            s = s.substring(0, i) + s.substring(k+1);
+                        }
+                        else
+                            s = s.substring(0, i);
+                    }
+                }
+            }
+            else if (s.charAt(i) == '(') {
+                for (int k = i; k < s.length(); k++) {
+                    if (s.charAt(k) == ')') {
+                        if (k+1 != s.length()) {
+                            s = s.substring(0, i) + s.substring(k+1);
+                        }
+                        else
+                            s = s.substring(0, i);
+                    }
+                }
+            }
+
+        }
         text = s;
         String OK = "abcdefghijklmnopqrstuvwxyz' ";
         for (int i = 0; i < s.length(); i++) {
@@ -57,8 +84,8 @@ public class Sentence {
         this.points = instancePoints();
 
         //changes the score based on the location of the sentence within the article
-        this.points /= (article.getLength() / (article.getLength() - this.indexInArticle));
-        if (this.checkBadList() || this.checkBadWords() || this.checkFirstWord())
+        this.points += ((article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences()) * LENGTH_WEIGHT * 100;
+        if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
             this.points = 0;
         return true;
     }
@@ -69,11 +96,21 @@ public class Sentence {
             double temp = words.get(i).getInstances() * 100;
             String posTemp = words.get(i).getPartOfSpeech();
 
-            //multiplies by 2 if the word is a proper noun
+            //proper nouns
             if (posTemp.equals("NNP") || posTemp.equals("NNPS"))
                 temp *= PROPER_NOUN_WEIGHT;
+            //nouns
             if (posTemp.equals("NN") || posTemp.equals("NNS"))
                 temp *= NOUN_WEIGHT;
+            //present tense nouns
+            if (posTemp.equals("VBP") || posTemp.equals("VBZ"))
+                temp *= PRESENT_VERB_WEIGHT;
+            //other types of verbs
+            if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN"))
+                temp *= NOUN_WEIGHT;
+            //adjectives
+            if (posTemp.equals("JJ") || posTemp.equals("JJR") || posTemp.equals("JJS"))
+                temp *= ADJECTIVE_WEIGHT;
                 //sets the word equal to zero if the word is a coordinating conjunction, subordinating conjunction, preposition, determiner, or adverb
             else if (posTemp.equals("CC") || posTemp.equals("IN") || posTemp.equals("DT") || posTemp.equals("RB"))
                 temp = 0;
@@ -109,7 +146,14 @@ public class Sentence {
         }
         return false;
     }
-
+    public boolean checkDoubleBadList() {
+        //goes through doubleBadList
+        for (int i = 0; i < doubleBadList.length; i++) {
+            if (text.contains(doubleBadList[i]))
+                return true;
+        }
+        return false;
+    }
     //checks to see if the first word in the sentence is a conjunction
     public boolean checkFirstWord() {
         String sub = "";
