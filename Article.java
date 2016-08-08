@@ -108,6 +108,14 @@ public class Article {
         return sentences.length;
     }
 
+    public int getCharLength() {
+        int length = 0;
+        for (Sentence sentence : sentences) {
+            length += sentence.toString().length();
+        }
+        return length;
+    }
+
     public String getUrl() {
         return url;
     }

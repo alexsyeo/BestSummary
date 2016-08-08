@@ -167,11 +167,13 @@ public class ArticleReceiver {
         newsTitles.remove(0);
         a.setUrl(newsLink);
 
-        if(sectionLink.equals(MainActivity.sectionUrls[MainActivity.currentSection])) {
+        if (sectionLink.equals(MainActivity.sectionUrls[MainActivity.currentSection])) {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    MainActivity.addArticleToList(newsArticles.get(newsArticles.size() - 1));
+                    if (newsArticles.get(newsArticles.size() - 1).getLength() > 1 && newsArticles.get(newsArticles.size() - 1).getCharLength() > 200) {
+                        MainActivity.addArticleToList(newsArticles.get(newsArticles.size() - 1));
+                    }
                 }
             });
         }

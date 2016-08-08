@@ -153,6 +153,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void fetchNews() {
         //show refresh icon
+        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
+        rotation.setRepeatCount(Animation.INFINITE);
+        refreshImageView.setAnimation(rotation);
         refreshImageView.getAnimation().start();
 
         //stop all other tasks
