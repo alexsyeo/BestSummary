@@ -19,10 +19,11 @@ public class Sentence {
     private static double NOUN_WEIGHT = 2;
     private static double PROPER_NOUN_WEIGHT = 4;
     private static double QUOTATION_WEIGHT = 0.5;
-    private static double LENGTH_WEIGHT = 2;
     private static double PRESENT_VERB_WEIGHT = 1;
     private static double VERB_WEIGHT = 1.5;
     private static double ADJECTIVE_WEIGHT = 1;
+    private static double INDEX_WEIGHT = 2;
+    private static double LENGTH_WEIGHT = 2;
 
     //constructor, creates a sentence that is split up by spaces
     public Sentence(String s, POSModel model) {
@@ -81,10 +82,18 @@ public class Sentence {
 
     //sets the score of the sentence
     public boolean scoreSentence(Article article) {
+        int x;
+        //Creates an initial point value based on the words in the sentences
+        //Takes into account instances of each word and their part of speech
         this.points = instancePoints();
-
         //changes the score based on the location of the sentence within the article
-        this.points += ((article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences()) * LENGTH_WEIGHT * 100;
+        //INDEX_WEIGHT changes the possible interval of the multiplier
+        x = (article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences();
+        this.points *= (x/INDEX_WEIGHT + (1-1/INDEX_WEIGHT));
+        //changes the score based on the length of the sentence
+        //LENGTH_WEIGHT changes the possible interval of the multiplier
+        x = 1/numWords;
+        this.points *= (x/LENGTH_WEIGHT + (1-1/LENGTH_WEIGHT));
         if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
             this.points = 0;
         return true;
