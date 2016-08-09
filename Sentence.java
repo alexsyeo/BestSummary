@@ -111,12 +111,12 @@ public class Sentence {
             //nouns
             if (posTemp.equals("NN") || posTemp.equals("NNS"))
                 temp *= NOUN_WEIGHT;
-            //present tense nouns
+            //present tense verbs
             if (posTemp.equals("VBP") || posTemp.equals("VBZ"))
                 temp *= PRESENT_VERB_WEIGHT;
             //other types of verbs
             if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN"))
-                temp *= NOUN_WEIGHT;
+                temp *= VERB_WEIGHT;
             //adjectives
             if (posTemp.equals("JJ") || posTemp.equals("JJR") || posTemp.equals("JJS"))
                 temp *= ADJECTIVE_WEIGHT;
