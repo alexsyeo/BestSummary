@@ -235,13 +235,10 @@ public class MainActivity extends AppCompatActivity {
 
     //sets up the part of speech tagger
     public POSModel setupPOSModel() {
-        //ByteBufferInputStream modelIn = null;
         InputStream modelIn = null;
         POSModel model = null;
         try {
             InputStream stream = getResources().openRawResource(R.raw.en_pos_maxent);
-            //byte[] b = IOUtils.toByteArray(stream);
-            //ByteBuffer buf = ByteBuffer.wrap(b);
             final byte[] data = IOUtils.toByteArray(stream);
             modelIn = new ByteArrayInputStream(data);
             model = new POSModel(modelIn);
