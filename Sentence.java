@@ -82,7 +82,7 @@ public class Sentence {
 
     //sets the score of the sentence
     public boolean scoreSentence(Article article) {
-        if (numWords != 0) {
+        if(numWords > 0) {
             int x;
             //Creates an initial point value based on the words in the sentences
             //Takes into account instances of each word and their part of speech
@@ -97,10 +97,11 @@ public class Sentence {
             this.points *= (x / LENGTH_WEIGHT + (1 - 1 / LENGTH_WEIGHT));
             if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
                 this.points = 0;
-            return true;
+        }else{
+            //no words in sentence
+            this.points = 0;
         }
-        this.points = 0;
-        return false;
+        return true;
     }
 
     public int instancePoints() {

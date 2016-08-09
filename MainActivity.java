@@ -1,25 +1,20 @@
 package com.gigstudios.newssummary;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arasthel.asyncjob.AsyncJob;
@@ -29,26 +24,13 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.xml.sax.SAXException;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import de.l3s.boilerpipe.BoilerpipeProcessingException;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.sentdetect.SentenceModel;
-
-import org.apache.commons.io.*;
-import java.io.ByteArrayInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -75,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private static ArrayList<Article> newsArticles = new ArrayList<>();
     private static NewsListAdapter listAdapter;
     public static ArrayList<AsyncJob<ArticleReceiver>> runningTasks = new ArrayList<>();
+
+    private ArrayList<Article> savedArticles = new ArrayList<>();
 
     @Override
     protected void onResume() {
@@ -187,19 +171,13 @@ public class MainActivity extends AppCompatActivity {
                         //setup POSModel
                         if (posModel == null) {
                             //load tagger
-                            long time1 = System.currentTimeMillis();
                             posModel = setupPOSModel();
-                            long time2 = System.currentTimeMillis();
-                            System.out.println("POSMODEL TIME TAKEN IN msecs: " + (time2-time1));
                         }
 
                         //setup model
                         if (sentenceModel == null) {
                             //load sentence detector
-                            long time1 = System.currentTimeMillis();
                             sentenceModel = setupSentenceModel();
-                            long time2 = System.currentTimeMillis();
-                            System.out.println("SENTENCEMODEL TIME TAKEN IN msecs: " + (time2-time1));
                         }
 
                         //AT LEAST 3, MOST 10
@@ -216,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResult(ArticleReceiver result) {
                         if (result.getSectionLink().equals(sectionUrls[currentSection])) {
+                            System.out.println(newsArticles.size());
                             if (newsArticles.size() == 0) {
                                 Toast.makeText(MainActivity.this, R.string.failed_to_gather_error, Toast.LENGTH_SHORT).show();
                             }
@@ -238,15 +217,11 @@ public class MainActivity extends AppCompatActivity {
         InputStream modelIn = null;
         POSModel model = null;
         try {
-            InputStream stream = getResources().openRawResource(R.raw.en_pos_maxent);
-            final byte[] data = IOUtils.toByteArray(stream);
-            modelIn = new ByteArrayInputStream(data);
+            modelIn = getResources().openRawResource(R.raw.en_pos_maxent);
             model = new POSModel(modelIn);
         } catch (IOException e) {
             // Model loading failed, handle the error
-            System.out.println("---------beginning of error stacktrace-----------");
             e.printStackTrace();
-            System.out.println("---------end of error stacktrace-----------------");
         } finally {
             if (modelIn != null) {
                 try {
@@ -256,8 +231,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        System.out.println("testing123 testing123");
-        System.out.println("------------POS MODEL: " + model);
         return model;
     }
 
@@ -277,6 +250,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                //Error
             }
         }
         return model;
