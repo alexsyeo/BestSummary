@@ -23,7 +23,7 @@ import javax.xml.parsers.SAXParserFactory;
 public class WordCounter {
     String article;
     Sentence[] sentences;
-
+    Sentence titleSentence;
     Context context;
 
     public WordCounter(String a, Context context) {
@@ -31,7 +31,7 @@ public class WordCounter {
         this.context = context;
     }
 
-    public Sentence[] makeSentences() {
+    public Sentence[] makeSentences(String title) {
 
         //initializes sentence detector
         SentenceDetectorME sentenceDetector = new SentenceDetectorME(MainActivity.sentenceModel);
@@ -57,6 +57,9 @@ public class WordCounter {
 
 
         POSModel pos = MainActivity.posModel;
+
+        //makes the title
+        titleSentence = new Sentence(title, pos);
 
 
         for (int i = 0; i < sentencesTempTemp.size(); i++) {
@@ -89,5 +92,9 @@ public class WordCounter {
                 sentences[i].getWord(j).setInstances(count);
             }
         }
+    }
+
+    public Sentence getTitle() {
+        return titleSentence;
     }
 }

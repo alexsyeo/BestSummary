@@ -9,7 +9,7 @@ import opennlp.tools.postag.POSTaggerME;
 
 public class Sentence {
 
-    private int points;
+    private double points;
     private int numWords;
     private int indexInArticle;
     private List<Word> words;
@@ -19,7 +19,7 @@ public class Sentence {
     private static double NOUN_WEIGHT = 2;
     private static double PROPER_NOUN_WEIGHT = 4;
     private static double QUOTATION_WEIGHT = 0.5;
-    private static double PRESENT_VERB_WEIGHT = 1;
+    private static double PRESENT_VERB_WEIGHT = 0;
     private static double VERB_WEIGHT = 1.5;
     private static double ADJECTIVE_WEIGHT = 1;
     private static double INDEX_WEIGHT = 2;
@@ -83,7 +83,7 @@ public class Sentence {
     //sets the score of the sentence
     public boolean scoreSentence(Article article) {
         if(numWords > 0) {
-            int x;
+            double x;
             //Creates an initial point value based on the words in the sentences
             //Takes into account instances of each word and their part of speech
             this.points = instancePoints();
@@ -104,7 +104,7 @@ public class Sentence {
         return true;
     }
 
-    public int instancePoints() {
+    public double instancePoints() {
         double count = 0;
         for (int i = 0; i < words.size(); i++) {
             double temp = words.get(i).getInstances() * 100;
@@ -133,7 +133,7 @@ public class Sentence {
         }
         if (this.containsString("\""))
             count *= QUOTATION_WEIGHT;
-        return (int) count;
+        return count;
     }
 
     //checks to see if there is a "bad" word in the sentence
@@ -154,7 +154,7 @@ public class Sentence {
         //goes through badList
         for (int i = 0; i < words.size(); i++) {
             for (int k = 0; k < badList.length; k++) {
-                if (words.get(i).toString().toLowerCase().equals(badList[k]))
+                if (words.get(i).getWord().toLowerCase().equals(badList[k]))
                     return true;
             }
         }
@@ -205,13 +205,18 @@ public class Sentence {
         return true;
     }
 
+    //getters and setters for the list of words
+    public List<Word> getWords() {
+        return words;
+    }
+
 
     //getters and setters for points
-    public int getPoints() {
+    public double getPoints() {
         return this.points;
     }
 
-    public void setPoints(int i) {
+    public void setPoints(double i) {
         this.points = i;
     }
 
