@@ -19,8 +19,8 @@ public class Sentence {
     private static double NOUN_WEIGHT = 2;
     private static double PROPER_NOUN_WEIGHT = 4;
     private static double QUOTATION_WEIGHT = 0.5;
-    private static double PRESENT_VERB_WEIGHT = 0;
     private static double VERB_WEIGHT = 1.5;
+    private static double PRESENT_VERB_WEIGHT = 0.25;
     private static double ADJECTIVE_WEIGHT = 1;
     private static double INDEX_WEIGHT = 2;
     private static double LENGTH_WEIGHT = 2;
@@ -95,6 +95,8 @@ public class Sentence {
             //LENGTH_WEIGHT changes the possible interval of the multiplier
             x = 1 / numWords;
             this.points *= (x / LENGTH_WEIGHT + (1 - 1 / LENGTH_WEIGHT));
+            if (this.checkPresentTense())
+                this.points *= PRESENT_VERB_WEIGHT;
             if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
                 this.points = 0;
         }else{
@@ -116,9 +118,6 @@ public class Sentence {
             //nouns
             if (posTemp.equals("NN") || posTemp.equals("NNS"))
                 temp *= NOUN_WEIGHT;
-            //present tense verbs
-            if (posTemp.equals("VBP") || posTemp.equals("VBZ"))
-                temp *= PRESENT_VERB_WEIGHT;
             //other types of verbs
             if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN"))
                 temp *= VERB_WEIGHT;
@@ -180,6 +179,16 @@ public class Sentence {
         }
         return sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB");
     }
+
+    //checks to see if there is a present tense verb in the sentence
+    public boolean checkPresentTense() {
+        for (int i = 0; i < words.size(); i++) {
+            if (words.get(i).getPartOfSpeech().equals("VBP") || words.get(i).getPartOfSpeech().equals("VBZ"))
+                return true;
+        }
+        return false;
+    }
+
 
     public boolean containsString(String s) {
         return this.toString().contains(s);
