@@ -82,21 +82,25 @@ public class Sentence {
 
     //sets the score of the sentence
     public boolean scoreSentence(Article article) {
-        int x;
-        //Creates an initial point value based on the words in the sentences
-        //Takes into account instances of each word and their part of speech
-        this.points = instancePoints();
-        //changes the score based on the location of the sentence within the article
-        //INDEX_WEIGHT changes the possible interval of the multiplier
-        x = (article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences();
-        this.points *= (x/INDEX_WEIGHT + (1-1/INDEX_WEIGHT));
-        //changes the score based on the length of the sentence
-        //LENGTH_WEIGHT changes the possible interval of the multiplier
-        x = 1/numWords;
-        this.points *= (x/LENGTH_WEIGHT + (1-1/LENGTH_WEIGHT));
-        if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
-            this.points = 0;
-        return true;
+        if (numWords != 0) {
+            int x;
+            //Creates an initial point value based on the words in the sentences
+            //Takes into account instances of each word and their part of speech
+            this.points = instancePoints();
+            //changes the score based on the location of the sentence within the article
+            //INDEX_WEIGHT changes the possible interval of the multiplier
+            x = (article.getNumberOfSentences() - this.indexInArticle) / article.getNumberOfSentences();
+            this.points *= (x / INDEX_WEIGHT + (1 - 1 / INDEX_WEIGHT));
+            //changes the score based on the length of the sentence
+            //LENGTH_WEIGHT changes the possible interval of the multiplier
+            x = 1 / numWords;
+            this.points *= (x / LENGTH_WEIGHT + (1 - 1 / LENGTH_WEIGHT));
+            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
+                this.points = 0;
+            return true;
+        }
+        this.points = 0;
+        return false;
     }
 
     public int instancePoints() {
