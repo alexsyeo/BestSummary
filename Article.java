@@ -86,7 +86,6 @@ public class Article {
             }
             //changes the points of the sentence based on the similarity between the sentence and the title
             double x = cosineSimilarity(titleInstances, sentenceInstances);
-            System.out.println(x);
             sentences[i].setPoints(sentences[i].getPoints() * (x / COS_WEIGHT + (1 - 1 / COS_WEIGHT)));
         }
 
@@ -108,7 +107,7 @@ public class Article {
                 if (sentence.getPoints() > top[i].getPoints()) {
                     boolean isGood = true;
                     for (int j = 0; j < top.length; j++) {
-                        if (top[j].equals(sentence))
+                        if (top[j].equals(sentence) || (sentence.toString().equals(top[j].toString())))
                             isGood = false;
                     }
                     if (isGood) {
@@ -145,14 +144,6 @@ public class Article {
     //compares two different arrays of values
     //will be used to compare each sentence to the title of the article
     public static double cosineSimilarity(double[] vectorA, double[] vectorB) {
-        System.out.print("VectorA:\t");
-        for (int i = 0; i < vectorA.length; i++) {
-            System.out.print(vectorA[i] + ", ");
-        }
-        System.out.print("VectorB:\t");
-        for (int i = 0; i < vectorB.length; i++) {
-            System.out.print(vectorB[i] + ", ");
-        }
         double dotProduct = 0.0;
         double normA = 0.0;
         double normB = 0.0;
