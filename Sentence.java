@@ -97,7 +97,7 @@ public class Sentence {
             this.points *= (x / LENGTH_WEIGHT + (1 - 1 / LENGTH_WEIGHT));
             if (this.checkPresentTense())
                 this.points *= PRESENT_VERB_WEIGHT;
-            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
+            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb())
                 this.points = 0;
         }else{
             //no words in sentence
@@ -184,6 +184,17 @@ public class Sentence {
     public boolean checkPresentTense() {
         for (int i = 0; i < words.size(); i++) {
             if (words.get(i).getPartOfSpeech().equals("VBP") || words.get(i).getPartOfSpeech().equals("VBZ"))
+                return true;
+        }
+        return false;
+    }
+
+    //check to see if there is a verb in the sentence
+    public boolean checkHasVerb() {
+        String posTemp;
+        for (int i = 0; i < words.size(); i++) {
+            posTemp = words.get(i).getPartOfSpeech();
+            if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN") || posTemp.equals("VBP") || posTemp.equals("VBZ"))
                 return true;
         }
         return false;
