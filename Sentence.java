@@ -24,6 +24,7 @@ public class Sentence {
     private static double ADJECTIVE_WEIGHT = 1;
     private static double INDEX_WEIGHT = 2;
     private static double LENGTH_WEIGHT = 2;
+    private static double BAD_WEIGHT = 0.01;
 
     //constructor, creates a sentence that is split up by spaces
     public Sentence(String s, POSModel model) {
@@ -97,8 +98,8 @@ public class Sentence {
             this.points *= (x / LENGTH_WEIGHT + (1 - 1 / LENGTH_WEIGHT));
             if (this.checkPresentTense())
                 this.points *= PRESENT_VERB_WEIGHT;
-            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb())
-                this.points = 0;
+            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotation())
+                this.points *= BAD_WEIGHT;
         }else{
             //no words in sentence
             this.points = 0;
@@ -177,7 +178,7 @@ public class Sentence {
                 return false;
             }
         }
-        return sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB");
+        return sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB") || sub.equals("PRP") || sub.equals("PRP$");
     }
 
     //checks to see if there is a present tense verb in the sentence
@@ -197,6 +198,20 @@ public class Sentence {
             if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN") || posTemp.equals("VBP") || posTemp.equals("VBZ"))
                 return true;
         }
+        return false;
+    }
+
+    //checks to see if there is only one quotation mark in the sentence
+    public boolean checkQuotation() {
+        int count = 0;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '\"') {
+                count++;
+                //System.out.println(text.charAt(i) + text.charAt(i-1));
+            }
+        }
+        if (count % 2 != 0)
+            return true;
         return false;
     }
 
@@ -255,5 +270,12 @@ public class Sentence {
 
     public String getInfo() {
         return "Index:\t" + this.indexInArticle + "\tNumberOfWords:\t" + this.numWords + "\tPoints:\t" + this.points;
+    }
+    public String getWordInfo() {
+        String ret = "";
+        for (int i = 0; i < words.size(); i++) {
+            ret += this.words.get(i).getWord() + "[" + this.words.get(i).getPartOfSpeech() + "] ";
+        }
+        return ret;
     }
 }
