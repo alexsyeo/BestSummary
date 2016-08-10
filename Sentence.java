@@ -18,13 +18,13 @@ public class Sentence {
     private static String[] doubleBadList = {"read more", "see also", "learn more"};
     private static double NOUN_WEIGHT = 2;
     private static double PROPER_NOUN_WEIGHT = 4;
-    private static double QUOTATION_WEIGHT = 0.5;
-    private static double VERB_WEIGHT = 1.5;
+    private static double QUOTATION_WEIGHT = 0.3;
+    private static double VERB_WEIGHT = 1.30;
     private static double PRESENT_VERB_WEIGHT = 0.25;
     private static double ADJECTIVE_WEIGHT = 1;
     private static double INDEX_WEIGHT = 2;
     private static double LENGTH_WEIGHT = 2;
-    private static double BAD_WEIGHT = 0.01;
+    private static double BAD_WEIGHT = 0.05;
     private static double NUMBER_WEIGHT = 10;
 
     //constructor, creates a sentence that is split up by spaces
@@ -102,7 +102,7 @@ public class Sentence {
             if (this.checkPresentTense())
                 this.points *= PRESENT_VERB_WEIGHT;
             //checks to see if any of the bad cases are true for the particular sentence
-            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotation())
+            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotationNumber())
                 this.points *= BAD_WEIGHT;
             //checks to see if there are any numbers in the sentence
             if (this.checkNumber() != 0) {
@@ -211,7 +211,7 @@ public class Sentence {
     }
 
     //checks to see if there is only one quotation mark in the sentence
-    public boolean checkQuotation() {
+    public boolean checkQuotationNumber() {
         int count = 0;
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '\"') {
