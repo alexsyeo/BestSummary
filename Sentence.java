@@ -25,6 +25,7 @@ public class Sentence {
     private static double INDEX_WEIGHT = 2;
     private static double LENGTH_WEIGHT = 2;
     private static double BAD_WEIGHT = 0.01;
+    private static double NUMBER_WEIGHT = 10;
 
     //constructor, creates a sentence that is split up by spaces
     public Sentence(String s, POSModel model) {
@@ -95,11 +96,19 @@ public class Sentence {
             //changes the score based on the length of the sentence
             //LENGTH_WEIGHT changes the possible interval of the multiplier
             x = 1 / numWords;
+
+            //checks to see if there are present tense verbs in the sentence
             this.points *= (x / LENGTH_WEIGHT + (1 - 1 / LENGTH_WEIGHT));
             if (this.checkPresentTense())
                 this.points *= PRESENT_VERB_WEIGHT;
+            //checks to see if any of the bad cases are true for the particular sentence
             if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotation())
                 this.points *= BAD_WEIGHT;
+            //checks to see if there are any numbers in the sentence
+            if (this.checkNumber() != 0) {
+                x = 1/this.checkNumber();
+                this.points *= (x / NUMBER_WEIGHT + (1 - 1 / NUMBER_WEIGHT));
+            }
         }else{
             //no words in sentence
             this.points = 0;
@@ -213,6 +222,18 @@ public class Sentence {
         if (count % 2 != 0)
             return true;
         return false;
+    }
+
+    public int checkNumber() {
+        int count = 0;
+        String number = "012345689";
+        for (int i = 0; i < text.length(); i++) {
+            for (int j = 0; j < number.length(); j++) {
+                if (text.charAt(i) == number.charAt(j))
+                    count++;
+            }
+        }
+        return count;
     }
 
 
