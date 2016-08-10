@@ -25,16 +25,17 @@ public class Sentence {
     private static double INDEX_WEIGHT = 2;
     private static double LENGTH_WEIGHT = 2;
     private static double BAD_WEIGHT = 0.05;
-    private static double NUMBER_WEIGHT = 10;
+    private static double NUMBER_WEIGHT = 2;
 
     //constructor, creates a sentence that is split up by spaces
     public Sentence(String s, POSModel model) {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '[') {
-                for (int k = i; k < s.length(); k++) {
+                for (int k = i + 1; k < s.length(); k++) {
                     if (s.charAt(k) == ']') {
                         if (k+1 != s.length()) {
                             s = s.substring(0, i) + s.substring(k+1);
+                            break;
                         }
                         else
                             s = s.substring(0, i);
@@ -42,17 +43,17 @@ public class Sentence {
                 }
             }
             else if (s.charAt(i) == '(') {
-                for (int k = i; k < s.length(); k++) {
+                for (int k = i + 1; k < s.length(); k++) {
                     if (s.charAt(k) == ')') {
                         if (k+1 != s.length()) {
                             s = s.substring(0, i) + s.substring(k+1);
+                            break;
                         }
                         else
                             s = s.substring(0, i);
                     }
                 }
             }
-
         }
         text = s;
         String OK = "abcdefghijklmnopqrstuvwxyz' ";
@@ -102,13 +103,13 @@ public class Sentence {
             if (this.checkPresentTense())
                 this.points *= PRESENT_VERB_WEIGHT;
             //checks to see if any of the bad cases are true for the particular sentence
-            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotationNumber())
+            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotationNumber() || this.checkSymbol())
                 this.points *= BAD_WEIGHT;
             //checks to see if there are any numbers in the sentence
             if (this.checkNumber() != 0) {
                 x = 1/this.checkNumber();
                 this.points *= (x / NUMBER_WEIGHT + (1 - 1 / NUMBER_WEIGHT));
-            }
+        }
         }else{
             //no words in sentence
             this.points = 0;
@@ -214,10 +215,8 @@ public class Sentence {
     public boolean checkQuotationNumber() {
         int count = 0;
         for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == '\"') {
+            if (text.charAt(i) == '"')
                 count++;
-                //System.out.println(text.charAt(i) + text.charAt(i-1));
-            }
         }
         if (count % 2 != 0)
             return true;
@@ -234,6 +233,17 @@ public class Sentence {
             }
         }
         return count;
+    }
+
+    public boolean checkSymbol() {
+        String symbol = "{}/|><=";
+        for (int i = 0; i < text.length(); i++) {
+            for (int j = 0; j < symbol.length(); j++) {
+                if (text.charAt(i) == symbol.charAt(j))
+                    return true;
+            }
+        }
+        return false;
     }
 
 
