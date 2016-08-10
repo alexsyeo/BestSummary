@@ -161,9 +161,8 @@ public class ArticleReceiver {
             article = mergeNYT(articleA);
         else
             article = merge(articleA, articleB);
-        newsArticles.add(new Article(article, MainActivity.SUMMARY_SENTENCES, context));
+        newsArticles.add(new Article(article, MainActivity.SUMMARY_SENTENCES, context, newsTitles.get(0)));
         Article a = newsArticles.get(newsArticles.size() - 1);
-        a.setTitle(newsTitles.get(0));
         newsTitles.remove(0);
         a.setUrl(newsLink);
 

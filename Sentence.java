@@ -9,7 +9,7 @@ import opennlp.tools.postag.POSTaggerME;
 
 public class Sentence {
 
-    private int points;
+    private double points;
     private int numWords;
     private int indexInArticle;
     private List<Word> words;
@@ -19,8 +19,8 @@ public class Sentence {
     private static double NOUN_WEIGHT = 2;
     private static double PROPER_NOUN_WEIGHT = 4;
     private static double QUOTATION_WEIGHT = 0.5;
-    private static double PRESENT_VERB_WEIGHT = 1;
     private static double VERB_WEIGHT = 1.5;
+    private static double PRESENT_VERB_WEIGHT = 0.25;
     private static double ADJECTIVE_WEIGHT = 1;
     private static double INDEX_WEIGHT = 2;
     private static double LENGTH_WEIGHT = 2;
@@ -83,7 +83,7 @@ public class Sentence {
     //sets the score of the sentence
     public boolean scoreSentence(Article article) {
         if(numWords > 0) {
-            int x;
+            double x;
             //Creates an initial point value based on the words in the sentences
             //Takes into account instances of each word and their part of speech
             this.points = instancePoints();
@@ -95,7 +95,9 @@ public class Sentence {
             //LENGTH_WEIGHT changes the possible interval of the multiplier
             x = 1 / numWords;
             this.points *= (x / LENGTH_WEIGHT + (1 - 1 / LENGTH_WEIGHT));
-            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord())
+            if (this.checkPresentTense())
+                this.points *= PRESENT_VERB_WEIGHT;
+            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb())
                 this.points = 0;
         }else{
             //no words in sentence
@@ -104,7 +106,7 @@ public class Sentence {
         return true;
     }
 
-    public int instancePoints() {
+    public double instancePoints() {
         double count = 0;
         for (int i = 0; i < words.size(); i++) {
             double temp = words.get(i).getInstances() * 100;
@@ -116,9 +118,6 @@ public class Sentence {
             //nouns
             if (posTemp.equals("NN") || posTemp.equals("NNS"))
                 temp *= NOUN_WEIGHT;
-            //present tense verbs
-            if (posTemp.equals("VBP") || posTemp.equals("VBZ"))
-                temp *= PRESENT_VERB_WEIGHT;
             //other types of verbs
             if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN"))
                 temp *= VERB_WEIGHT;
@@ -133,7 +132,7 @@ public class Sentence {
         }
         if (this.containsString("\""))
             count *= QUOTATION_WEIGHT;
-        return (int) count;
+        return count;
     }
 
     //checks to see if there is a "bad" word in the sentence
@@ -154,7 +153,7 @@ public class Sentence {
         //goes through badList
         for (int i = 0; i < words.size(); i++) {
             for (int k = 0; k < badList.length; k++) {
-                if (words.get(i).toString().toLowerCase().equals(badList[k]))
+                if (words.get(i).getWord().toLowerCase().equals(badList[k]))
                     return true;
             }
         }
@@ -181,6 +180,27 @@ public class Sentence {
         return sub.equals("CC") || sub.equals("IN") || sub.equals("WRB") || sub.equals("RB");
     }
 
+    //checks to see if there is a present tense verb in the sentence
+    public boolean checkPresentTense() {
+        for (int i = 0; i < words.size(); i++) {
+            if (words.get(i).getPartOfSpeech().equals("VBP") || words.get(i).getPartOfSpeech().equals("VBZ"))
+                return true;
+        }
+        return false;
+    }
+
+    //check to see if there is a verb in the sentence
+    public boolean checkHasVerb() {
+        String posTemp;
+        for (int i = 0; i < words.size(); i++) {
+            posTemp = words.get(i).getPartOfSpeech();
+            if (posTemp.equals("VB") || posTemp.equals("VBD") || posTemp.equals("VBG") || posTemp.equals("VBN") || posTemp.equals("VBP") || posTemp.equals("VBZ"))
+                return true;
+        }
+        return false;
+    }
+
+
     public boolean containsString(String s) {
         return this.toString().contains(s);
     }
@@ -205,13 +225,18 @@ public class Sentence {
         return true;
     }
 
+    //getters and setters for the list of words
+    public List<Word> getWords() {
+        return words;
+    }
+
 
     //getters and setters for points
-    public int getPoints() {
+    public double getPoints() {
         return this.points;
     }
 
-    public void setPoints(int i) {
+    public void setPoints(double i) {
         this.points = i;
     }
 
