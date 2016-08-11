@@ -1,1 +1,0 @@
-To run program in Eclipse, place these data files in the same level as the 'src' directory
