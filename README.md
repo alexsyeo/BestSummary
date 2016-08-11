@@ -1,5 +1,5 @@
-## BestSummary
+# Xyquaz News Summarizer
 
-# Version 2.0
+## Version 2.0
 
 @authors: Jared Muralt, Alex Yeo, Sean Richardson, William Adriance
