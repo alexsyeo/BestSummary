@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         //load settings
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SUMMARY_SENTENCES = Integer.parseInt(SP.getString(getString(R.string.num_sentences_key), "3"));
+
+        fetchNews();
     }
 
     @Override

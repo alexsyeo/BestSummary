@@ -103,7 +103,7 @@ public class Sentence {
             if (this.checkPresentTense())
                 this.points *= PRESENT_VERB_WEIGHT;
             //checks to see if any of the bad cases are true for the particular sentence
-            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotationNumber() || this.checkSymbol())
+            if (this.checkBadList() || this.checkBadWords() || this.checkDoubleBadList() || this.checkFirstWord() || !this.checkHasVerb() || this.checkQuotationBracket() || this.checkSymbol())
                 this.points *= BAD_WEIGHT;
             //checks to see if there are any numbers in the sentence
             if (this.checkNumber() != 0) {
@@ -212,15 +212,20 @@ public class Sentence {
     }
 
     //checks to see if there is only one quotation mark in the sentence
-    public boolean checkQuotationNumber() {
+    public boolean checkQuotationBracket() {
         int count = 0;
+        int count1 = 0;
+        int count2 = 0;
+
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '"')
                 count++;
+            else if (text.charAt(i) == '[' || text.charAt(i) == ']')
+                count1++;
+            else if (text.charAt(i) == '(' || text.charAt(i) == ')')
+                count2++;
         }
-        if (count % 2 != 0)
-            return true;
-        return false;
+        return (count % 2 != 0 || count1 % 2 != 0 || count2 % 2 != 0);
     }
 
     public int checkNumber() {
