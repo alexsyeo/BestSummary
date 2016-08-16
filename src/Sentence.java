@@ -241,7 +241,7 @@ public class Sentence {
     }
 
     public boolean checkSymbol() {
-        String symbol = "{}/|><=";
+        String symbol = "{}/|><=@";
         for (int i = 0; i < text.length(); i++) {
             for (int j = 0; j < symbol.length(); j++) {
                 if (text.charAt(i) == symbol.charAt(j))
